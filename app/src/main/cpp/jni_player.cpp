@@ -6,38 +6,67 @@
 
 #define CLASS_FFMPEGPLAYER      "com/niklaus/player/FFmpegPlayer"
 
-jstring getInfo(JNIEnv *env, jobject thiz);
 jlong create(JNIEnv *env, jobject thiz);
+jstring getInfo(JNIEnv *env, jobject thiz,jlong instance);
+void setDataSource(JNIEnv *env, jobject thiz,jlong instance,jstring path);
+void prepare(JNIEnv *env, jobject thiz,jlong instance);
+void start(JNIEnv *env, jobject thiz,jlong instance);
 
 static JNINativeMethod playerMethods[] = {
-        {"native_create",  "()J", (void *) getInfo},
-        {"native_getInfo",  "()Ljava/lang/String;", (void *) create},
+        {"native_create", "()J", (void *) create},
+        {"native_setDataSource", "(JLjava/lang/String;)V", (void *) setDataSource},
+        {"native_prepare", "(J)V", (void *) prepare},
+        {"native_start", "(J)V", (void *) start},
+        {"native_getInfo", "(J)Ljava/lang/String;", (void *) getInfo},
 };
 
 JNIEXPORT
 jint JNI_OnLoad(JavaVM *vm, void *reserved) {
-    jint ret = JNI_ERR;
+    jint loadRet = JNI_ERR;
     JNIEnv *env = nullptr;
-    if (vm->GetEnv((void **) (&env), JNI_VERSION_1_6) != JNI_OK) {
-        return ret;
+    loadRet = vm->GetEnv((void **) (&env), JNI_VERSION_1_6);
+    LOGI(LOG_TAG, "JNI_OnLoad ret = %d",loadRet);
+    if (loadRet!= JNI_OK) {
+        return loadRet;
     }
 
+    int registerRet;
     jclass playerClazz = env->FindClass(CLASS_FFMPEGPLAYER);
+    int nMethods = sizeof(playerMethods) / sizeof(playerMethods[0]);
+    registerRet = env->RegisterNatives(playerClazz,playerMethods,nMethods);
+    LOGI(LOG_TAG, "nMethods size = %d, RegisterNatives ret = %d",nMethods,registerRet);
 
-    ret = env->RegisterNatives(playerClazz,playerMethods,sizeof(playerMethods) /
-                                                   sizeof(playerMethods[0]));
-    LOGI(LOG_TAG, "JNI_OnLoad RegisterNatives ret = %d",ret);
-}
-
-JNIEXPORT
-jstring getInfo(JNIEnv *env, jobject thiz,jlong instance){
-    auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
-    return env->NewStringUTF(ffmpegPlayer->getInfo().c_str());
+    return JNI_VERSION_1_6;
 }
 
 JNIEXPORT
 jlong create(JNIEnv *env, jobject thiz){
     auto* ffmpegPlayer = new FFmpegPlayer();
     return reinterpret_cast<jlong>(ffmpegPlayer);
+}
+
+JNIEXPORT
+void setDataSource(JNIEnv *env, jobject thiz, jlong instance, jstring path){
+    auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
+    const char* pathChar = env->GetStringUTFChars(path,JNI_FALSE);
+    ffmpegPlayer->setDataSource(pathChar);
+}
+
+JNIEXPORT
+void prepare(JNIEnv *env, jobject thiz, jlong instance){
+    auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
+    ffmpegPlayer->prepare();
+}
+
+JNIEXPORT
+void start(JNIEnv *env, jobject thiz, jlong instance){
+    auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
+    ffmpegPlayer->start();
+}
+
+JNIEXPORT
+jstring getInfo(JNIEnv *env, jobject thiz,jlong instance){
+    auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
+    return env->NewStringUTF(ffmpegPlayer->getInfo().c_str());
 }
 

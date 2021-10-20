@@ -8,7 +8,7 @@ extern "C"
 
 #define LOG_TAG "JNIUtils"
 
-static JavaVM *java_vm = NULL;
+static JavaVM *java_vm = nullptr;
 static pthread_key_t current_env;
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
@@ -18,7 +18,7 @@ static const char *custom_class_names[] = {
 };
 
 static int custom_class_num = 0;
-static jclass *loaded_custom_classes = NULL;
+static jclass *loaded_custom_classes = nullptr;
 
 static bool jni_is_custom_class(const char *name) {
     for (int i = 0; i < custom_class_num; i++) {
@@ -56,7 +56,7 @@ void jni_load_custom_class(JNIEnv *env)
 
 void jni_unload_custom_class(JNIEnv *env)
 {
-    for (int i = 0; i++; i < custom_class_num) {
+    for (int i = 0; i < custom_class_num; i++) {
         env->DeleteGlobalRef(loaded_custom_classes[i]);
         loaded_custom_classes[i] = NULL;
     }

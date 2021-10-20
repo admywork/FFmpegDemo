@@ -6,8 +6,10 @@
 #define FFMPEGDEMO_FFMPEGPLAYER_H
 
 #include <string>
-#include "Demuxer.h"
 
+class Demuxer;
+class VideoDecoder;
+class AudioDecoder;
 
 class FFmpegPlayer {
 
@@ -19,15 +21,19 @@ public:
 
     std::string getInfo();
 
-    void setFilePath(std::string filePath);
+    void setDataSource(std::string path);
 
+    void prepare();
+
+    void start();
 
 private:
 
-    std::string m_FilePath;
+    std::string m_Path;
 
-    //解封装
     Demuxer *m_Demuxer;
+    VideoDecoder *m_VideoDecoder;
+    AudioDecoder *m_AudioDecoder;
 
 };
 

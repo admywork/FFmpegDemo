@@ -3,6 +3,10 @@
 //
 
 #include "FFmpegPlayer.h"
+#include "Common.h"
+#include "Demuxer.h"
+#include "VideoDecoder.h"
+#include "AudioDecoder.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,13 +31,25 @@ FFmpegPlayer::~FFmpegPlayer() {
 
 }
 
-void FFmpegPlayer::setFilePath(std::string filePath) {
-    if(!m_FilePath.empty()){
+void FFmpegPlayer::setDataSource(std::string filePath) {
+    if(!m_Path.empty()){
         return;
     }
-    m_FilePath = std::move(filePath);
+    m_Path = std::move(filePath);
+}
+
+void FFmpegPlayer::prepare() {
     m_Demuxer = new Demuxer();
-    m_Demuxer->init(m_FilePath);
+    m_Demuxer->init(m_Path);
+    m_VideoDecoder = new VideoDecoder();
+    m_VideoDecoder->init(m_Demuxer->getVideoStream(),DECODER_TYPE_VIDEO);
+    m_AudioDecoder = new AudioDecoder();
+    m_AudioDecoder->init(m_Demuxer->getAudioStream(),DECODER_TYPE_AUDIO);
+}
+
+void FFmpegPlayer::start() {
+    m_VideoDecoder->startDecode();
+    m_AudioDecoder->startDecode();
 }
 
 std::string FFmpegPlayer::getInfo() {

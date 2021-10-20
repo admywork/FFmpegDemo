@@ -1,34 +1,37 @@
 package com.niklaus.player;
 
-import android.content.Context;
-import android.util.Log;
-
-import com.getkeepsafe.relinker.ReLinker;
 
 public class FFmpegPlayer {
 
-    private long mNativeContext;
+    private long mNativeRef;
 
-    FFmpegPlayer(Context ctx){
-        ReLinker.loadLibrary(ctx, "ffmpegplayer", new ReLinker.LoadListener() {
-            @Override
-            public void success() {
-
-            }
-
-            @Override
-            public void failure(Throwable t) {
-
-            }
-        });
-        mNativeContext = native_create();
+    public FFmpegPlayer(){
+        mNativeRef = native_create();
     }
 
     public String getInfo(){
-        return native_getInfo();
+        return native_getInfo(mNativeRef);
     }
 
-    private native String native_getInfo();
+    public void setDataSource(String path){
+        native_setDataSource(mNativeRef,path);
+    }
+
+    public void prepare(){
+        native_prepare(mNativeRef);
+    }
+
+    public void start(){
+        native_start(mNativeRef);
+    }
+
+
+
+    /************************native方法*****************************/
+    private native String native_getInfo(long nativeRef);
     private native long native_create();
+    private native void native_setDataSource(long nativeRef,String path);
+    private native void native_prepare(long nativeRef);
+    private native void native_start(long nativeRef);
 
 }
