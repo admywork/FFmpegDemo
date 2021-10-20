@@ -24,17 +24,19 @@ public:
 
     ~BaseDecoder();
 
-    void startDecode();
+    void start();
 
-    int init(AVStream *avStream,DecoderType type);
+    int init(AVStream *avStream,int streamIndex,DecoderType type);
 
     static void decodeLoop(BaseDecoder *decoder);
 
-    void onDecodeReady();
+    virtual void onDecodeReady() = 0;
 
 protected:
 
     DecoderType mType;
+
+    int m_StreamIndex = -1;
 
     AVStream *m_AVStream = nullptr;
     //解码器

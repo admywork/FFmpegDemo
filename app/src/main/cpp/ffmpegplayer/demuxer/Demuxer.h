@@ -5,10 +5,13 @@
 #ifndef FFMPEGDEMO_DEMUXER_H
 #define FFMPEGDEMO_DEMUXER_H
 
+#include <string>
+#include <thread>
+
 struct AVFormatContext;
 struct AVStream;
+struct AVPacket;
 
-#include <string>
 class Demuxer {
 public:
     Demuxer(){}
@@ -17,11 +20,27 @@ public:
 
     int init(const std::string& filePath);
 
-    AVFormatContext* getAVFormatContext();
+    void start();
 
-    AVStream* getVideoStream();
+    AVFormatContext* getAVFormatContext(){
+        return m_AVFormatContext;
+    };
 
-    AVStream* getAudioStream();
+    int getVideoStreamIndex(){
+        return m_VideoStreamIndex;
+    };
+
+    AVStream* getVideoStream(){
+        return m_VideoStream;
+    };
+
+    int getAudioStreamIndex(){
+        return m_AudioStreamIndex;
+    };
+
+    AVStream* getAudioStream(){
+        return m_AudioStream;
+    };
 
 private:
     //封装格式上下文
@@ -31,12 +50,19 @@ private:
 
     int m_VideoStreamIndex = -1;
 
-    AVStream* m_VideoStream;
+    AVStream *m_VideoStream;
 
-    AVStream* m_AudioStream;
+    AVStream *m_AudioStream;
+
+    std::thread *m_DemuxThread = nullptr;
+
+    //编码的数据包
+    AVPacket *m_Packet = nullptr;
 
     //总时长 ms
     long m_Duration = 0;
+
+    static void demuxLoop(Demuxer *demuxer);
 };
 
 

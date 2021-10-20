@@ -14,3 +14,7 @@ VideoDecoder::VideoDecoder() {
 VideoDecoder::~VideoDecoder() {
 
 }
+
+void VideoDecoder::onDecodeReady() {
+
+}

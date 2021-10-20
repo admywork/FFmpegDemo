@@ -24,9 +24,10 @@ BaseDecoder::~BaseDecoder() {
 
 }
 
-int BaseDecoder::init(AVStream *avStream,DecoderType type) {
+int BaseDecoder::init(AVStream *avStream,int streamIndex,DecoderType type) {
     mType = type;
     m_AVStream = avStream;
+    m_StreamIndex = streamIndex;
     int ret = -1;
     //获取解码器参数
     AVCodecParameters *codecParameters = avStream->codecpar;
@@ -46,7 +47,7 @@ int BaseDecoder::init(AVStream *avStream,DecoderType type) {
     return 0;
 }
 
-void BaseDecoder::startDecode() {
+void BaseDecoder::start() {
     std::lock_guard<std::mutex> lck (m_Mutex);
     LOGI(getLogTag(),"startDecode");
     if(!m_DecodeThread){
@@ -65,10 +66,7 @@ void BaseDecoder::decodeLoop(BaseDecoder *decoder) {
     }
 }
 
-void BaseDecoder::onDecodeReady() {
-    LOGI(getLogTag(),"onDecodeReady");
-}
-
 int BaseDecoder::decodeOnePacket() {
+    int ret;
     return 1;
 }

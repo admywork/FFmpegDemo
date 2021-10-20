@@ -34,17 +34,28 @@ int Demuxer::init(const std::string& filePath) {
     LOGI(LOG_TAG,"audioStreamIndex = %d, videoStreamIndex = %d",m_AudioStreamIndex,m_VideoStreamIndex);
     LOGI(LOG_TAG,"m_Duration = %ld ms",m_Duration);
 
+    //创建 AVPacket 存放编码数据
+    m_Packet = av_packet_alloc();
+
     return ret;
 }
 
-AVFormatContext *Demuxer::getAVFormatContext() {
-    return m_AVFormatContext;
+void Demuxer::start() {
+    if(!m_DemuxThread){
+        m_DemuxThread = new std::thread(demuxLoop,this);
+    }
 }
 
-AVStream* Demuxer::getVideoStream() {
-    return m_VideoStream;
-}
+void Demuxer::demuxLoop(Demuxer *demuxer) {
+    int ret;
+    do{
+        ret = av_read_frame(demuxer->m_AVFormatContext, demuxer->m_Packet);
+        LOGI(LOG_TAG, "av_read_frame ret = %d", ret);
+        if(demuxer->m_Packet->stream_index == demuxer->m_VideoStreamIndex){
 
-AVStream* Demuxer::getAudioStream() {
-    return m_AudioStream;
+        }
+        if(demuxer->m_Packet->stream_index == demuxer->m_AudioStreamIndex){
+
+        }
+    } while (ret>=0);
 }

@@ -15,3 +15,7 @@ AudioDecoder::AudioDecoder() {
 AudioDecoder::~AudioDecoder() {
 
 }
+
+void AudioDecoder::onDecodeReady() {
+
+}

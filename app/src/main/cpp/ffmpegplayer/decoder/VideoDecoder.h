@@ -14,6 +14,8 @@ public:
     VideoDecoder();
 
     ~VideoDecoder();
+
+    virtual void onDecodeReady();
 };
 
 
