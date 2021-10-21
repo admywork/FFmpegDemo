@@ -9,7 +9,7 @@
 #define LOG_TAG "AudioDecoder"
 
 AudioDecoder::AudioDecoder() {
-
+    setType(DECODER_TYPE_AUDIO);
 }
 
 AudioDecoder::~AudioDecoder() {
@@ -18,4 +18,8 @@ AudioDecoder::~AudioDecoder() {
 
 void AudioDecoder::onDecodeReady() {
 
+}
+
+void AudioDecoder::onFrameAvailable(AVFrame *avFrame) {
+    LOGI(LOG_TAG,"onFrameAvailable");
 }

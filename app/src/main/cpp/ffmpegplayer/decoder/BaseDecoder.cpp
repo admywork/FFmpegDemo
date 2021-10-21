@@ -17,31 +17,32 @@ extern "C"{
 #define LOG_TAG "BaseDecoder"
 
 BaseDecoder::BaseDecoder() {
-
+    m_SyncQueue = new SyncQueue<AVPacket*>(10);
 }
 
 BaseDecoder::~BaseDecoder() {
 
 }
 
-int BaseDecoder::init(AVStream *avStream,int streamIndex,DecoderType type) {
-    mType = type;
+int BaseDecoder::init(AVStream *avStream,int streamIndex) {
     m_AVStream = avStream;
     m_StreamIndex = streamIndex;
+    LOGI(getLogTag(),"m_StreamIndex = %d",streamIndex);
     int ret = -1;
     //获取解码器参数
-    AVCodecParameters *codecParameters = avStream->codecpar;
+    AVCodecParameters *codecParameters = m_AVStream->codecpar;
     //获取解码器
     m_AVCodec = avcodec_find_decoder(codecParameters->codec_id);
     //创建解码器上下文
     m_AVCodecContext = avcodec_alloc_context3(m_AVCodec);
 
+    ret = avcodec_parameters_to_context(m_AVCodecContext, codecParameters);
+    LOGI(getLogTag(),"avcodec_parameters_to_context ret = %d",ret);
+
     //打开解码器
     ret = avcodec_open2(m_AVCodecContext, m_AVCodec, nullptr);
     LOGI(getLogTag(),"avcodec_open2 ret = %d",ret);
 
-    //创建 AVPacket 存放编码数据
-    m_Packet = av_packet_alloc();
     //创建 AVFrame 存放解码后的数据
     m_Frame = av_frame_alloc();
     return 0;
@@ -57,16 +58,31 @@ void BaseDecoder::start() {
 
 void BaseDecoder::decodeLoop(BaseDecoder *decoder) {
     decoder->onDecodeReady();
-    LOGI(decoder->getLogTag(),"decodeLoop");
     while (true){
-        if(decoder->decodeOnePacket() != 0) {
-
+        AVPacket *avPacket;
+        decoder->m_SyncQueue->take(avPacket);
+//        LOGI(decoder->getLogTag(),"take AVPacket after");
+        int decodeRet = decoder->decodeOnePacket(avPacket);
+        if (decodeRet != 0 && decodeRet != AVERROR(EAGAIN)) {
+            break;
         }
-        break;
     }
 }
 
-int BaseDecoder::decodeOnePacket() {
-    int ret;
-    return 1;
+int BaseDecoder::decodeOnePacket(AVPacket *avPacket) {
+    int ret =avcodec_send_packet(m_AVCodecContext, avPacket);
+    LOGI(getLogTag(), "avcodec_send_packet ret = %d", ret);
+    if(ret != 0) {
+        return ret;
+    }
+    while ((ret = avcodec_receive_frame(m_AVCodecContext, m_Frame)) == 0) {
+        onFrameAvailable(m_Frame);
+    }
+    LOGI(getLogTag(),"avcodec_receive_frame ret = %d",ret);
+    return ret;
+}
+
+void BaseDecoder::putAVPacket(AVPacket *avPacket) {
+    m_SyncQueue->put(avPacket);
+//    LOGI(getLogTag(),"putAVPacket after");
 }

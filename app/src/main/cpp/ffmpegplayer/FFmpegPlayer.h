@@ -10,6 +10,7 @@
 class Demuxer;
 class VideoDecoder;
 class AudioDecoder;
+struct AVPacket;
 
 class FFmpegPlayer {
 
@@ -34,6 +35,9 @@ private:
     Demuxer *m_Demuxer;
     VideoDecoder *m_VideoDecoder;
     AudioDecoder *m_AudioDecoder;
+
+
+    void demuxOnePacketCallBack(AVPacket *avPacket,int streamIndex);
 
 };
 

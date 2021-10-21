@@ -31,8 +31,7 @@ int Demuxer::init(const std::string& filePath) {
     m_VideoStream = m_AVFormatContext->streams[m_VideoStreamIndex];
     m_AudioStream = m_AVFormatContext->streams[m_AudioStreamIndex];
     m_Duration = m_AVFormatContext->duration * 1000 / AV_TIME_BASE ;//us to ms
-    LOGI(LOG_TAG,"audioStreamIndex = %d, videoStreamIndex = %d",m_AudioStreamIndex,m_VideoStreamIndex);
-    LOGI(LOG_TAG,"m_Duration = %ld ms",m_Duration);
+    LOGI(LOG_TAG,"audioStreamIndex = %d, videoStreamIndex = %d,m_Duration = %ld ms",m_AudioStreamIndex,m_VideoStreamIndex,m_Duration);
 
     //创建 AVPacket 存放编码数据
     m_Packet = av_packet_alloc();
@@ -50,12 +49,18 @@ void Demuxer::demuxLoop(Demuxer *demuxer) {
     int ret;
     do{
         ret = av_read_frame(demuxer->m_AVFormatContext, demuxer->m_Packet);
-        LOGI(LOG_TAG, "av_read_frame ret = %d", ret);
-        if(demuxer->m_Packet->stream_index == demuxer->m_VideoStreamIndex){
-
+        if(ret == AVERROR_EOF){
+            if(demuxer->m_Packet->stream_index == demuxer->m_VideoStreamIndex){
+                demuxer->videoEof = true;
+                LOGI(LOG_TAG,"av_read_frame video eof!");
+            }
+            if(demuxer->m_Packet->stream_index == demuxer->m_AudioStreamIndex){
+                demuxer->audioEof = true;
+                LOGI(LOG_TAG,"av_read_frame audio eof!");
+            }
         }
-        if(demuxer->m_Packet->stream_index == demuxer->m_AudioStreamIndex){
-
-        }
-    } while (ret>=0);
+        demuxer->m_DemuxOnePacketCallback(demuxer->m_Packet,demuxer->m_Packet->stream_index);
+//        LOGI(LOG_TAG, "av_read_frame ret = %d", ret);
+    } while ((!demuxer->videoEof || !demuxer->audioEof) && ret>=0);
+    LOGI(LOG_TAG,"demuxLoop end!");
 }

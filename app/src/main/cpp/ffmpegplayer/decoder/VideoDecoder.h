@@ -16,6 +16,8 @@ public:
     ~VideoDecoder();
 
     virtual void onDecodeReady();
+
+    virtual void onFrameAvailable(AVFrame *avFrame);
 };
 
 

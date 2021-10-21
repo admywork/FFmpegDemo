@@ -7,6 +7,7 @@
 
 #include <string>
 #include <thread>
+#include <functional>
 
 struct AVFormatContext;
 struct AVStream;
@@ -42,6 +43,10 @@ public:
         return m_AudioStream;
     };
 
+    void setDemuxOnePacketCallback(std::function<void(AVPacket *avPacket,int streamIndex)> callback){
+        m_DemuxOnePacketCallback = callback;
+    }
+
 private:
     //封装格式上下文
     AVFormatContext *m_AVFormatContext = nullptr;
@@ -59,8 +64,14 @@ private:
     //编码的数据包
     AVPacket *m_Packet = nullptr;
 
+    bool videoEof;
+
+    bool audioEof;
+
     //总时长 ms
     long m_Duration = 0;
+
+    std::function<void(AVPacket *avPacket,int streamIndex)> m_DemuxOnePacketCallback;
 
     static void demuxLoop(Demuxer *demuxer);
 };

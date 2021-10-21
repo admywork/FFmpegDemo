@@ -8,7 +8,7 @@
 #define LOG_TAG "VideoDecoder"
 
 VideoDecoder::VideoDecoder() {
-
+    setType(DECODER_TYPE_VIDEO);
 }
 
 VideoDecoder::~VideoDecoder() {
@@ -17,4 +17,8 @@ VideoDecoder::~VideoDecoder() {
 
 void VideoDecoder::onDecodeReady() {
 
+}
+
+void VideoDecoder::onFrameAvailable(AVFrame *avFrame) {
+    LOGI(LOG_TAG,"onFrameAvailable");
 }

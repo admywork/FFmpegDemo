@@ -3,10 +3,10 @@
 //
 
 #include "FFmpegPlayer.h"
-#include "Common.h"
 #include "Demuxer.h"
 #include "VideoDecoder.h"
 #include "AudioDecoder.h"
+#include "ALog.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,36 +23,14 @@ extern "C" {
 }
 #endif
 
+#define LOG_TAG "FFmpegPlayer"
+
 FFmpegPlayer::FFmpegPlayer() {
 
 }
 
 FFmpegPlayer::~FFmpegPlayer() {
 
-}
-
-void FFmpegPlayer::setDataSource(std::string filePath) {
-    if (!m_Path.empty()) {
-        return;
-    }
-    m_Path = std::move(filePath);
-}
-
-void FFmpegPlayer::prepare() {
-    m_Demuxer = new Demuxer();
-    m_Demuxer->init(m_Path);
-    m_VideoDecoder = new VideoDecoder();
-    m_VideoDecoder->init(m_Demuxer->getVideoStream(), m_Demuxer->getVideoStreamIndex(),
-                         DECODER_TYPE_VIDEO);
-    m_AudioDecoder = new AudioDecoder();
-    m_AudioDecoder->init(m_Demuxer->getAudioStream(), m_Demuxer->getAudioStreamIndex(),
-                         DECODER_TYPE_AUDIO);
-}
-
-void FFmpegPlayer::start() {
-    m_Demuxer->start();
-    m_VideoDecoder->start();
-    m_AudioDecoder->start();
 }
 
 std::string FFmpegPlayer::getInfo() {
@@ -75,3 +53,41 @@ std::string FFmpegPlayer::getInfo() {
     info += AV_STRINGIFY(LIBSWSCALE_VERSION);
     return info;
 }
+
+void FFmpegPlayer::setDataSource(std::string filePath) {
+    if (!m_Path.empty()) {
+        return;
+    }
+    m_Path = std::move(filePath);
+}
+
+void FFmpegPlayer::prepare() {
+    m_Demuxer = new Demuxer();
+    m_Demuxer->init(m_Path);
+    m_VideoDecoder = new VideoDecoder();
+    m_VideoDecoder->init(m_Demuxer->getVideoStream(), m_Demuxer->getVideoStreamIndex());
+    m_AudioDecoder = new AudioDecoder();
+    m_AudioDecoder->init(m_Demuxer->getAudioStream(), m_Demuxer->getAudioStreamIndex());
+    m_Demuxer->setDemuxOnePacketCallback([&](AVPacket *avPacket, int streamIndex) {
+        demuxOnePacketCallBack(avPacket,streamIndex);
+    });
+    av_log_set_callback(log_callback);
+}
+
+void FFmpegPlayer::start() {
+    m_Demuxer->start();
+    m_VideoDecoder->start();
+    m_AudioDecoder->start();
+}
+
+void FFmpegPlayer::demuxOnePacketCallBack(AVPacket *avPacket,int streamIndex) {
+//    LOGI(LOG_TAG,"demuxOnePacketCallBack streamIndex = %d",streamIndex);
+    if(streamIndex == m_Demuxer->getVideoStreamIndex()){
+        m_VideoDecoder->putAVPacket(avPacket);
+    }
+    if(streamIndex == m_Demuxer->getAudioStreamIndex()){
+        m_AudioDecoder->putAVPacket(avPacket);
+    }
+}
+
+

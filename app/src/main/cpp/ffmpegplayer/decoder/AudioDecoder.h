@@ -18,6 +18,8 @@ public:
 
     virtual void onDecodeReady();
 
+    virtual void onFrameAvailable(AVFrame *avFrame);
+
 };
 
 

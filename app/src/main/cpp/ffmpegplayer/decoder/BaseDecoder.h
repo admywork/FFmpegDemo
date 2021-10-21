@@ -5,10 +5,8 @@
 #ifndef FFMPEGDEMO_BASEDECODER_H
 #define FFMPEGDEMO_BASEDECODER_H
 
-#include <mutex>
 #include <thread>
-
-#include "Common.h"
+#include "SyncQueue.h"
 
 struct AVFormatContext;
 struct AVCodecParameters;
@@ -18,6 +16,11 @@ struct AVStream;
 struct AVPacket;
 struct AVFrame;
 
+enum DecoderType {
+    DECODER_TYPE_VIDEO,
+    DECODER_TYPE_AUDIO
+};
+
 class BaseDecoder {
 public:
     BaseDecoder();
@@ -26,15 +29,19 @@ public:
 
     void start();
 
-    int init(AVStream *avStream,int streamIndex,DecoderType type);
+    int init(AVStream *avStream, int streamIndex);
 
     static void decodeLoop(BaseDecoder *decoder);
 
     virtual void onDecodeReady() = 0;
 
+    void putAVPacket(AVPacket* avPacket);
+
+    virtual void onFrameAvailable(AVFrame *avFrame) = 0;
+
 protected:
 
-    DecoderType mType;
+    DecoderType m_Type;
 
     int m_StreamIndex = -1;
 
@@ -43,21 +50,25 @@ protected:
     AVCodec *m_AVCodec = nullptr;
     //解码器上下文
     AVCodecContext *m_AVCodecContext = nullptr;
-    //编码的数据包
-    AVPacket        *m_Packet = nullptr;
     //解码的帧
-    AVFrame         *m_Frame = nullptr;
+    AVFrame *m_Frame = nullptr;
 
     std::mutex m_Mutex;
 
     std::thread *m_DecodeThread = nullptr;
 
-private:
-    char* getLogTag(){
-        return const_cast<char *>(mType == DECODER_TYPE_VIDEO ? "VideoDecoder" : "AudioDecoder");
+    void setType(DecoderType decoderType) {
+        m_Type = decoderType;
     }
 
-    int decodeOnePacket();
+    SyncQueue<AVPacket*> *m_SyncQueue;
+
+private:
+    char *getLogTag() {
+        return const_cast<char *>(m_Type == DECODER_TYPE_VIDEO ? "VideoDecoder" : "AudioDecoder");
+    }
+
+    int decodeOnePacket(AVPacket *avPacket);
 };
 
 

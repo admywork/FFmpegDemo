@@ -9,15 +9,15 @@ link_directories(
 )
 
 include_directories(
-        ./includes/ffmpeg
-        ./includes/fdkaac
-        ./includes/lame
-        ./includes/x264
+        includes/ffmpeg
+        includes/fdkaac
+        includes/lame
+        includes/x264
 
-        ./ffmpegplayer
-        ./ffmpegplayer/demuxer
-        ./ffmpegplayer/decoder
-        ./ffmpegplayer/utils
+        ffmpegplayer
+        ffmpegplayer/demuxer
+        ffmpegplayer/decoder
+        ffmpegplayer/utils
 )
 
 file(
