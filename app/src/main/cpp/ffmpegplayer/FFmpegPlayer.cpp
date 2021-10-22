@@ -1,6 +1,7 @@
 //
 // Created by 付安栋 on 2021/9/20.
 //
+#pragma once
 
 #include "FFmpegPlayer.h"
 #include "Demuxer.h"
@@ -19,6 +20,8 @@ extern "C" {
 #include "libpostproc/version.h"
 #include "libswresample/version.h"
 #include "libswscale/version.h"
+
+#include "libavformat/avformat.h"
 #ifdef __cplusplus
 }
 #endif
@@ -68,8 +71,8 @@ void FFmpegPlayer::prepare() {
     m_VideoDecoder->init(m_Demuxer->getVideoStream(), m_Demuxer->getVideoStreamIndex());
     m_AudioDecoder = new AudioDecoder();
     m_AudioDecoder->init(m_Demuxer->getAudioStream(), m_Demuxer->getAudioStreamIndex());
-    m_Demuxer->setDemuxOnePacketCallback([&](AVPacket *avPacket, int streamIndex) {
-        demuxOnePacketCallBack(avPacket,streamIndex);
+    m_Demuxer->setDemuxOnePacketCallback([&](AVPacket *avPacket) {
+        demuxOnePacketCallBack(avPacket);
     });
     av_log_set_callback(log_callback);
 }
@@ -80,12 +83,12 @@ void FFmpegPlayer::start() {
     m_AudioDecoder->start();
 }
 
-void FFmpegPlayer::demuxOnePacketCallBack(AVPacket *avPacket,int streamIndex) {
+void FFmpegPlayer::demuxOnePacketCallBack(AVPacket *avPacket) {
 //    LOGI(LOG_TAG,"demuxOnePacketCallBack streamIndex = %d",streamIndex);
-    if(streamIndex == m_Demuxer->getVideoStreamIndex()){
+    if(avPacket->stream_index == m_Demuxer->getVideoStreamIndex()){
         m_VideoDecoder->putAVPacket(avPacket);
     }
-    if(streamIndex == m_Demuxer->getAudioStreamIndex()){
+    if(avPacket->stream_index == m_Demuxer->getAudioStreamIndex()){
         m_AudioDecoder->putAVPacket(avPacket);
     }
 }

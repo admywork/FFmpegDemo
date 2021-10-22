@@ -33,11 +33,10 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        requestAppPermissions();
-
         ReLinker.loadLibrary(this, "ffmpegplayer");
 
-        initPlayer();
+        requestAppPermissions();
+
     }
 
     private void initPlayer(){
@@ -57,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onGranted(List<String> permissions, boolean all) {
-
+                        initPlayer();
                     }
 
                     @Override

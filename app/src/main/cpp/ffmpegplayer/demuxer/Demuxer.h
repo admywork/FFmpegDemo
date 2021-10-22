@@ -43,7 +43,7 @@ public:
         return m_AudioStream;
     };
 
-    void setDemuxOnePacketCallback(std::function<void(AVPacket *avPacket,int streamIndex)> callback){
+    void setDemuxOnePacketCallback(std::function<void(AVPacket*)> callback){
         m_DemuxOnePacketCallback = callback;
     }
 
@@ -61,9 +61,6 @@ private:
 
     std::thread *m_DemuxThread = nullptr;
 
-    //编码的数据包
-    AVPacket *m_Packet = nullptr;
-
     bool videoEof;
 
     bool audioEof;
@@ -71,7 +68,7 @@ private:
     //总时长 ms
     long m_Duration = 0;
 
-    std::function<void(AVPacket *avPacket,int streamIndex)> m_DemuxOnePacketCallback;
+    std::function<void(AVPacket *avPacket)> m_DemuxOnePacketCallback;
 
     static void demuxLoop(Demuxer *demuxer);
 };

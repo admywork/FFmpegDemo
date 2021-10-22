@@ -37,7 +37,7 @@ private:
     AudioDecoder *m_AudioDecoder;
 
 
-    void demuxOnePacketCallBack(AVPacket *avPacket,int streamIndex);
+    void demuxOnePacketCallBack(AVPacket *avPacket);
 
 };
 

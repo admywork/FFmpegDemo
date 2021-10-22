@@ -2,47 +2,41 @@
 #include <list>
 #include <mutex>
 #include <condition_variable>
-#include <iostream>
+#include "ALog.h"
+
+#define LOG_TAG "SyncQueue"
 
 template<typename T>
-class SyncQueue
-{
+class SyncQueue {
 private:
-    bool isFull() const
-    {
+    bool isFull() const {
         return m_queue.size() == m_maxSize;
     }
 
-    bool isEmpty() const
-    {
+    bool isEmpty() const {
         return m_queue.empty();
     }
 
 public:
-    SyncQueue(int maxSize) : m_maxSize(maxSize)
-    {
+    SyncQueue(int maxSize) : m_maxSize(maxSize) {
     }
 
-    void put(const T& x)
-    {
+    void put(const T &x) {
         std::lock_guard<std::mutex> locker(m_mutex);
 
-        while (isFull())
-        {
-            std::cout << "the blocking queue is full,waiting..." << std::endl;
+        while (isFull()) {
+//            LOGV(LOG_TAG, "the blocking queue is full,waiting...");
             m_notFull.wait(m_mutex);
         }
         m_queue.push_back(x);
         m_notEmpty.notify_one();
     }
 
-    void take(T& x)
-    {
+    void take(T &x) {
         std::lock_guard<std::mutex> locker(m_mutex);
 
-        while (isEmpty())
-        {
-            std::cout << "the blocking queue is empty,wating..." << std::endl;
+        while (isEmpty()) {
+//            LOGV(LOG_TAG, "the blocking queue is empty,wating...");
             m_notEmpty.wait(m_mutex);
         }
 

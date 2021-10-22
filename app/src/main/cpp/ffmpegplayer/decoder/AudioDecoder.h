@@ -7,6 +7,9 @@
 
 #include "BaseDecoder.h"
 
+#include <iostream>
+#include <fstream>
+
 
 class AudioDecoder : public BaseDecoder{
 
@@ -19,6 +22,9 @@ public:
     virtual void onDecodeReady();
 
     virtual void onFrameAvailable(AVFrame *avFrame);
+
+private:
+    std::fstream fstream;
 
 };
 

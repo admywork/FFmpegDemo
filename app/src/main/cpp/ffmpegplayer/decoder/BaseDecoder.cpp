@@ -39,6 +39,8 @@ int BaseDecoder::init(AVStream *avStream,int streamIndex) {
     ret = avcodec_parameters_to_context(m_AVCodecContext, codecParameters);
     LOGI(getLogTag(),"avcodec_parameters_to_context ret = %d",ret);
 
+    m_AVCodecContext->thread_count = 0;
+
     //打开解码器
     ret = avcodec_open2(m_AVCodecContext, m_AVCodec, nullptr);
     LOGI(getLogTag(),"avcodec_open2 ret = %d",ret);
@@ -61,24 +63,19 @@ void BaseDecoder::decodeLoop(BaseDecoder *decoder) {
     while (true){
         AVPacket *avPacket;
         decoder->m_SyncQueue->take(avPacket);
-//        LOGI(decoder->getLogTag(),"take AVPacket after");
-        int decodeRet = decoder->decodeOnePacket(avPacket);
-        if (decodeRet != 0 && decodeRet != AVERROR(EAGAIN)) {
-            break;
-        }
+        decoder->decodeOnePacket(avPacket);
     }
 }
 
 int BaseDecoder::decodeOnePacket(AVPacket *avPacket) {
     int ret =avcodec_send_packet(m_AVCodecContext, avPacket);
-    LOGI(getLogTag(), "avcodec_send_packet ret = %d", ret);
     if(ret != 0) {
         return ret;
     }
     while ((ret = avcodec_receive_frame(m_AVCodecContext, m_Frame)) == 0) {
         onFrameAvailable(m_Frame);
     }
-    LOGI(getLogTag(),"avcodec_receive_frame ret = %d",ret);
+    av_packet_free(&avPacket);
     return ret;
 }
 
