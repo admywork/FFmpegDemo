@@ -50,7 +50,6 @@ void Demuxer::demuxLoop(Demuxer *demuxer) {
     do {
         AVPacket* avPacket = av_packet_alloc();
         ret = av_read_frame(demuxer->m_AVFormatContext, avPacket);
-//        LOGI(LOG_TAG, "av_read_frame ret = %d", ret);
         if (ret == AVERROR_EOF) {
             LOGI(LOG_TAG, "av_read_frame eof!");
         } else if (ret == 0) {

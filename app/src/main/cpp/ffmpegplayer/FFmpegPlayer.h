@@ -10,6 +10,8 @@
 class Demuxer;
 class VideoDecoder;
 class AudioDecoder;
+class AudioFilter;
+
 struct AVPacket;
 
 class FFmpegPlayer {
@@ -32,9 +34,10 @@ private:
 
     std::string m_Path;
 
-    Demuxer *m_Demuxer;
-    VideoDecoder *m_VideoDecoder;
-    AudioDecoder *m_AudioDecoder;
+    std::unique_ptr<Demuxer> m_Demuxer;
+    std::unique_ptr<VideoDecoder> m_VideoDecoder;
+    std::unique_ptr<AudioDecoder> m_AudioDecoder;
+    std::unique_ptr<AudioFilter> m_AudioFilter;
 
 
     void demuxOnePacketCallBack(AVPacket *avPacket);

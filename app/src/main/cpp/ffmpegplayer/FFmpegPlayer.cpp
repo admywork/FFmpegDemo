@@ -4,9 +4,12 @@
 #pragma once
 
 #include "FFmpegPlayer.h"
+
+#include <memory>
 #include "Demuxer.h"
 #include "VideoDecoder.h"
 #include "AudioDecoder.h"
+#include "AudioFilter.h"
 #include "ALog.h"
 
 #ifdef __cplusplus
@@ -65,15 +68,16 @@ void FFmpegPlayer::setDataSource(std::string filePath) {
 }
 
 void FFmpegPlayer::prepare() {
-    m_Demuxer = new Demuxer();
+    m_Demuxer = std::make_unique<Demuxer>();
     m_Demuxer->init(m_Path);
-    m_VideoDecoder = new VideoDecoder();
-    m_VideoDecoder->init(m_Demuxer->getVideoStream(), m_Demuxer->getVideoStreamIndex());
-    m_AudioDecoder = new AudioDecoder();
-    m_AudioDecoder->init(m_Demuxer->getAudioStream(), m_Demuxer->getAudioStreamIndex());
     m_Demuxer->setDemuxOnePacketCallback([&](AVPacket *avPacket) {
         demuxOnePacketCallBack(avPacket);
     });
+    m_VideoDecoder = std::make_unique<VideoDecoder>();
+    m_VideoDecoder->init(m_Demuxer->getVideoStream(), m_Demuxer->getVideoStreamIndex());
+    m_AudioDecoder = std::make_unique<AudioDecoder>();
+    m_AudioDecoder->init(m_Demuxer->getAudioStream(), m_Demuxer->getAudioStreamIndex());
+    m_AudioFilter = std::make_unique<AudioFilter>();
     av_log_set_callback(log_callback);
 }
 

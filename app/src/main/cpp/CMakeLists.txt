@@ -17,6 +17,7 @@ include_directories(
         ffmpegplayer
         ffmpegplayer/demuxer
         ffmpegplayer/decoder
+        ffmpegplayer/filter
         ffmpegplayer/utils
 )
 
