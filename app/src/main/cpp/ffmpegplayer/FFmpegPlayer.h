@@ -13,6 +13,7 @@ class AudioDecoder;
 class AudioFilter;
 
 struct AVPacket;
+struct AVFrame;
 
 class FFmpegPlayer {
 
@@ -41,6 +42,10 @@ private:
 
 
     void demuxOnePacketCallBack(AVPacket *avPacket);
+
+    void decodeOneVideoFrameCallBack(AVFrame *avFrame);
+
+    void decodeOneAudioFrameCallBack(AVFrame *avFrame);
 
 };
 

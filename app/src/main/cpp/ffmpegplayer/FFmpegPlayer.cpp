@@ -73,10 +73,18 @@ void FFmpegPlayer::prepare() {
     m_Demuxer->setDemuxOnePacketCallback([&](AVPacket *avPacket) {
         demuxOnePacketCallBack(avPacket);
     });
+
     m_VideoDecoder = std::make_unique<VideoDecoder>();
     m_VideoDecoder->init(m_Demuxer->getVideoStream(), m_Demuxer->getVideoStreamIndex());
+    m_VideoDecoder->setDecodeOneFrameCallback([&](AVFrame *avFrame){
+        decodeOneVideoFrameCallBack(avFrame);
+    });
+
     m_AudioDecoder = std::make_unique<AudioDecoder>();
     m_AudioDecoder->init(m_Demuxer->getAudioStream(), m_Demuxer->getAudioStreamIndex());
+    m_AudioDecoder->setDecodeOneFrameCallback([&](AVFrame *avFrame){
+        decodeOneAudioFrameCallBack(avFrame);
+    });
     m_AudioFilter = std::make_unique<AudioFilter>();
     av_log_set_callback(log_callback);
 }
@@ -95,6 +103,18 @@ void FFmpegPlayer::demuxOnePacketCallBack(AVPacket *avPacket) {
     if(avPacket->stream_index == m_Demuxer->getAudioStreamIndex()){
         m_AudioDecoder->putAVPacket(avPacket);
     }
+}
+
+void FFmpegPlayer::decodeOneVideoFrameCallBack(AVFrame *avFrame){
+    av_frame_free(&avFrame);
+}
+
+void FFmpegPlayer::decodeOneAudioFrameCallBack(AVFrame *avFrame){
+    AVFrame *filteFrame= m_AudioFilter->filterFrame(avFrame);
+    if(filteFrame){
+        av_frame_free(&filteFrame);
+    }
+    av_frame_free(&avFrame);
 }
 
 

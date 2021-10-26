@@ -26,6 +26,8 @@ public:
 private:
     std::fstream fstream;
 
+    void writePCM(AVFrame *avFrame);
+
 };
 
 

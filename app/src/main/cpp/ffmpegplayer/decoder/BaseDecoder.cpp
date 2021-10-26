@@ -14,8 +14,6 @@ extern "C"{
 }
 #endif
 
-#define LOG_TAG "BaseDecoder"
-
 BaseDecoder::BaseDecoder() {
     m_SyncQueue = new SyncQueue<AVPacket*>(10);
 }
@@ -45,8 +43,6 @@ int BaseDecoder::init(AVStream *avStream,int streamIndex) {
     ret = avcodec_open2(m_AVCodecContext, m_AVCodec, nullptr);
     LOGI(getLogTag(),"avcodec_open2 ret = %d",ret);
 
-    //创建 AVFrame 存放解码后的数据
-    m_Frame = av_frame_alloc();
     return 0;
 }
 
@@ -72,8 +68,9 @@ int BaseDecoder::decodeOnePacket(AVPacket *avPacket) {
     if(ret != 0) {
         return ret;
     }
-    while ((ret = avcodec_receive_frame(m_AVCodecContext, m_Frame)) == 0) {
-        onFrameAvailable(m_Frame);
+    AVFrame *avFrame = av_frame_alloc();
+    while ((ret = avcodec_receive_frame(m_AVCodecContext, avFrame)) == 0) {
+        onFrameAvailable(avFrame);
     }
     av_packet_free(&avPacket);
     return ret;

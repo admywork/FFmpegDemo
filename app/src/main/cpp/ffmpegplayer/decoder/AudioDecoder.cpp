@@ -30,7 +30,12 @@ void AudioDecoder::onDecodeReady() {
 }
 
 void AudioDecoder::onFrameAvailable(AVFrame *avFrame) {
-    LOGI(LOG_TAG, "onFrameAvailable avFrame format = %d, channels = %d, sample_rate = %d",avFrame->format,avFrame->channels,avFrame->sample_rate);
+    if(m_DecodeOneFrameCallback){
+        m_DecodeOneFrameCallback(avFrame);
+    }
+}
+
+void AudioDecoder::writePCM(AVFrame *avFrame) {
     auto avSampleFormat = static_cast<AVSampleFormat>(avFrame->format);
     int bytePerSample = av_get_bytes_per_sample(avSampleFormat);
     if(av_sample_fmt_is_planar(avSampleFormat)) {
@@ -44,6 +49,6 @@ void AudioDecoder::onFrameAvailable(AVFrame *avFrame) {
         }
     } else {
         fstream.write(reinterpret_cast<const char *>(avFrame->data[0]),
-                 avFrame->linesize[0]);
+                      avFrame->linesize[0]);
     }
 }

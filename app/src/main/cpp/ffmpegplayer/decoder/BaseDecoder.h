@@ -31,6 +31,10 @@ public:
 
     int init(AVStream *avStream, int streamIndex);
 
+    void setDecodeOneFrameCallback(std::function<void(AVFrame *avFrame)> callBack){
+        m_DecodeOneFrameCallback = callBack;
+    };
+
     static void decodeLoop(BaseDecoder *decoder);
 
     virtual void onDecodeReady() = 0;
@@ -50,8 +54,6 @@ protected:
     AVCodec *m_AVCodec = nullptr;
     //解码器上下文
     AVCodecContext *m_AVCodecContext = nullptr;
-    //解码的帧
-    AVFrame *m_Frame = nullptr;
 
     std::mutex m_Mutex;
 
@@ -63,12 +65,15 @@ protected:
 
     SyncQueue<AVPacket*> *m_SyncQueue;
 
+    std::function<void(AVFrame *avFrame)> m_DecodeOneFrameCallback;
+
 private:
     char *getLogTag() {
         return const_cast<char *>(m_Type == DECODER_TYPE_VIDEO ? "VideoDecoder" : "AudioDecoder");
     }
 
     int decodeOnePacket(AVPacket *avPacket);
+
 };
 
 

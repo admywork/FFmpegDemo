@@ -1,8 +1,7 @@
 //
 // Created by 付安栋 on 2021/10/22.
 //
-
-
+#pragma once
 
 #include "ALog.h"
 #include "AudioFilter.h"
@@ -10,9 +9,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "libavfilter/avfilter.h"
 #include "libavutil/channel_layout.h"
 #include "libavutil/opt.h"
+#include "libavfilter/avfilter.h"
+#include "libavfilter/buffersink.h"
+#include "libavfilter/buffersrc.h"
 #ifdef __cplusplus
 }
 #endif
@@ -20,7 +21,7 @@ extern "C" {
 #define LOG_TAG "AudioFilter"
 
 AudioFilter::AudioFilter() {
-    m_AVFilterGraph = avfilter_graph_alloc();
+
 }
 
 AudioFilter::~AudioFilter() {
@@ -102,15 +103,23 @@ int AudioFilter::init(int channels, int sample_rate, int sample_fmt, AVRational 
 
     if ((ret = avfilter_graph_parse_ptr(m_AVFilterGraph, filter_descr, &inputs, &outputs,
                                         nullptr)) < 0) {
-        LOGE(LOG_TAG, "avfilter_graph_parse_ptr ret = %d \n",ret);
+        LOGE(LOG_TAG, "avfilter_graph_parse_ptr ret = %d \n", ret);
         goto end;
     }
 
 
     if ((ret = avfilter_graph_config(m_AVFilterGraph, nullptr)) < 0) {
-        LOGE(LOG_TAG, "avfilter_graph_config ret = %d \n",ret);
+        LOGE(LOG_TAG, "avfilter_graph_config ret = %d \n", ret);
         goto end;
     }
+
+    outlink = m_Buffersink_ctx->inputs[0];
+    av_get_channel_layout_string(args, sizeof(args), -1, outlink->channel_layout);
+    LOGI(LOG_TAG, "Output: srate:%dHz fmt:%s chlayout:%s\n",
+         (int) outlink->sample_rate,
+         (char *) av_x_if_null(av_get_sample_fmt_name(static_cast<AVSampleFormat>(outlink->format)),
+                               "?"),
+         args);
 
     end:
     avfilter_inout_free(&inputs);
@@ -118,4 +127,24 @@ int AudioFilter::init(int channels, int sample_rate, int sample_fmt, AVRational 
 
     return ret;
 
+}
+
+AVFrame* AudioFilter::filterFrame(AVFrame *avFrame) {
+    if (!m_AVFilterGraph) {
+        init(avFrame->channels, avFrame->sample_rate, avFrame->format,
+             {1, avFrame->sample_rate});
+    }
+    if (av_buffersrc_add_frame_flags(m_Buffersrc_ctx, avFrame, AV_BUFFERSRC_FLAG_KEEP_REF) < 0) {
+        LOGE(LOG_TAG, "Error while feeding the audio filtergraph\n");
+    }
+    AVFrame *filtFrame = av_frame_alloc();
+    int ret = av_buffersink_get_frame(m_Buffersink_ctx, filtFrame);
+    if (ret < 0) {
+        av_frame_free(&filtFrame);
+        if (ret != AVERROR(EAGAIN)) {
+            LOGE(LOG_TAG, "av_buffersink_get_frame ret = %d", ret);
+        }
+        return nullptr;
+    }
+    return filtFrame;
 }

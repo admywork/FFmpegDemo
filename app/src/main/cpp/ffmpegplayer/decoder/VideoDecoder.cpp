@@ -20,5 +20,7 @@ void VideoDecoder::onDecodeReady() {
 }
 
 void VideoDecoder::onFrameAvailable(AVFrame *avFrame) {
-    LOGI(LOG_TAG,"onFrameAvailable");
+    if(m_DecodeOneFrameCallback){
+        m_DecodeOneFrameCallback(avFrame);
+    }
 }

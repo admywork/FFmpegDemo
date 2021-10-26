@@ -5,6 +5,7 @@
 #ifndef FFMPEGDEMO_AUDIOFILTER_H
 #define FFMPEGDEMO_AUDIOFILTER_H
 
+struct AVFrame;
 struct AVFilterGraph;
 struct AVRational;
 struct AVFilterContext;
@@ -16,15 +17,17 @@ public:
 
     ~AudioFilter();
 
-    int init(int channels,int sample_rate,int sample_fmt,AVRational time_base);
+    AVFrame* filterFrame(AVFrame *srcFrame);
 
 private:
 
-    AVFilterContext *m_Buffersink_ctx;
+    AVFilterContext *m_Buffersink_ctx = nullptr;
 
-    AVFilterContext *m_Buffersrc_ctx;
+    AVFilterContext *m_Buffersrc_ctx = nullptr;
 
-    AVFilterGraph *m_AVFilterGraph;
+    AVFilterGraph *m_AVFilterGraph = nullptr;
+
+    int init(int channels,int sample_rate,int sample_fmt,AVRational time_base);
 
 };
 
