@@ -11,6 +11,7 @@ class Demuxer;
 class VideoDecoder;
 class AudioDecoder;
 class AudioFilter;
+class AudioRender;
 
 struct AVPacket;
 struct AVFrame;
@@ -39,6 +40,7 @@ private:
     std::unique_ptr<VideoDecoder> m_VideoDecoder;
     std::unique_ptr<AudioDecoder> m_AudioDecoder;
     std::unique_ptr<AudioFilter> m_AudioFilter;
+    std::unique_ptr<AudioRender> m_AudioRender;
 
 
     void demuxOnePacketCallBack(AVPacket *avPacket);

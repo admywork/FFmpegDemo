@@ -18,6 +18,7 @@ include_directories(
         ffmpegplayer/demuxer
         ffmpegplayer/decoder
         ffmpegplayer/filter
+        ffmpegplayer/render
         ffmpegplayer/utils
 )
 
@@ -36,10 +37,10 @@ add_library(
         ${ffmpegplayer_src})
 
 
-find_library(
-        log-lib
-
-        log)
+#find_library(
+#        log-lib
+#
+#        log)
 
 set(ffmpeg-libs
         avcodec
@@ -55,9 +56,19 @@ set(ffmpeg-libs
         x264
         )
 
+set(native-libs
+        android
+        EGL
+        GLESv3
+        OpenSLES
+        log
+        m
+        z
+        )
+
 
 target_link_libraries(
         ffmpegplayer
 
-        ${ffmpeg-libs}
-        ${log-lib})
+        ${native-libs}
+        ${ffmpeg-libs})

@@ -10,6 +10,7 @@
 #include "VideoDecoder.h"
 #include "AudioDecoder.h"
 #include "AudioFilter.h"
+#include "AudioRender.h"
 #include "ALog.h"
 
 #ifdef __cplusplus
@@ -85,7 +86,12 @@ void FFmpegPlayer::prepare() {
     m_AudioDecoder->setDecodeOneFrameCallback([&](AVFrame *avFrame){
         decodeOneAudioFrameCallBack(avFrame);
     });
+
     m_AudioFilter = std::make_unique<AudioFilter>();
+
+    m_AudioRender = std::make_unique<AudioRender>();
+    m_AudioRender->init();
+
     av_log_set_callback(log_callback);
 }
 
