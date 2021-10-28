@@ -4,9 +4,12 @@
 
 #ifndef FFMPEGDEMO_AUDIORENDER_H
 #define FFMPEGDEMO_AUDIORENDER_H
-
+#include "SyncQueue.h"
+#include <thread>
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
+
+struct AVFrame;
 
 class AudioRender {
 public:
@@ -17,6 +20,10 @@ public:
     void init();
 
     static void callback(SLAndroidSimpleBufferQueueItf bufferQueue, void *context);
+
+    void start();
+
+    void putAVFrame(AVFrame *avFrame);
 
 private:
 
@@ -31,9 +38,15 @@ private:
     SLVolumeItf m_AudioPlayerVolume = nullptr;
     SLAndroidSimpleBufferQueueItf m_BufferQueueItf;
 
+    SyncQueue<AVFrame*> *m_SyncQueue;
+
+    std::thread *m_LoopThread = nullptr;
+
     void createEngine();
 
-    void HandleAudioFrameQueue();
+    void handleAudioFrameQueue();
+
+    static void renderLoop(AudioRender *audioRender);
 };
 
 

@@ -21,7 +21,7 @@ extern "C" {
 #define LOG_TAG "AudioFilter"
 
 AudioFilter::AudioFilter() {
-
+    fstream.open("sdcard/123_f.pcm", std::ios::out);
 }
 
 AudioFilter::~AudioFilter() {
@@ -30,7 +30,7 @@ AudioFilter::~AudioFilter() {
 
 int AudioFilter::init(int channels, int sample_rate, int sample_fmt, AVRational time_base) {
 
-    const char *filter_descr = "aresample=44100,aformat=sample_fmts=s16:channel_layouts=mono";
+    const char *filter_descr = "aresample=44100,aformat=sample_fmts=s16:channel_layouts=stereo";
 
     char args[512];
     int ret = 0;
@@ -39,7 +39,7 @@ int AudioFilter::init(int channels, int sample_rate, int sample_fmt, AVRational 
     AVFilterInOut *outputs = avfilter_inout_alloc();
     AVFilterInOut *inputs = avfilter_inout_alloc();
     static const enum AVSampleFormat out_sample_fmts[] = {AV_SAMPLE_FMT_S16, AV_SAMPLE_FMT_NONE};
-    static const int64_t out_channel_layouts[] = {AV_CH_LAYOUT_MONO, -1};
+    static const int64_t out_channel_layouts[] = {AV_CH_LAYOUT_STEREO, -1};
     static const int out_sample_rates[] = {44100, -1};
     const AVFilterLink *outlink;
 
@@ -146,5 +146,24 @@ AVFrame* AudioFilter::filterFrame(AVFrame *avFrame) {
         }
         return nullptr;
     }
+    writePCM(filtFrame);
     return filtFrame;
+}
+
+void AudioFilter::writePCM(AVFrame *avFrame) {
+    auto avSampleFormat = static_cast<AVSampleFormat>(avFrame->format);
+    int bytePerSample = av_get_bytes_per_sample(avSampleFormat);
+    if(av_sample_fmt_is_planar(avSampleFormat)) {
+        for (int i = 0; i < avFrame->nb_samples; i++) {//拷贝每个采样的数据。
+            fstream.write(
+                    reinterpret_cast<const char *>(avFrame->data[0] + i * bytePerSample),
+                    bytePerSample);
+            fstream.write(
+                    reinterpret_cast<const char *>(avFrame->data[1] + i * bytePerSample),
+                    bytePerSample);
+        }
+    } else {
+        fstream.write(reinterpret_cast<const char *>(avFrame->data[0]),
+                      avFrame->linesize[0]);
+    }
 }

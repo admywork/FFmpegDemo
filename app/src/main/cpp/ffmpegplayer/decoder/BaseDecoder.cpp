@@ -2,6 +2,8 @@
 // Created by 付安栋 on 2021/9/20.
 //
 
+#pragma once
+
 #include "BaseDecoder.h"
 #include "ALog.h"
 

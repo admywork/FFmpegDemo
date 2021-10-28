@@ -18,7 +18,7 @@ extern "C" {
 
 AudioDecoder::AudioDecoder() {
     setType(DECODER_TYPE_AUDIO);
-    fstream.open("sdcard/123.pcm", std::ios::out);
+    fstream.open("sdcard/123_d.pcm", std::ios::out);
 }
 
 AudioDecoder::~AudioDecoder() {
@@ -30,6 +30,7 @@ void AudioDecoder::onDecodeReady() {
 }
 
 void AudioDecoder::onFrameAvailable(AVFrame *avFrame) {
+//    writePCM(avFrame);
     if(m_DecodeOneFrameCallback){
         m_DecodeOneFrameCallback(avFrame);
     }

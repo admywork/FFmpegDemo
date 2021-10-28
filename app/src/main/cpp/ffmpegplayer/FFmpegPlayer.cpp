@@ -77,13 +77,13 @@ void FFmpegPlayer::prepare() {
 
     m_VideoDecoder = std::make_unique<VideoDecoder>();
     m_VideoDecoder->init(m_Demuxer->getVideoStream(), m_Demuxer->getVideoStreamIndex());
-    m_VideoDecoder->setDecodeOneFrameCallback([&](AVFrame *avFrame){
+    m_VideoDecoder->setDecodeOneFrameCallback([&](AVFrame *avFrame) {
         decodeOneVideoFrameCallBack(avFrame);
     });
 
     m_AudioDecoder = std::make_unique<AudioDecoder>();
     m_AudioDecoder->init(m_Demuxer->getAudioStream(), m_Demuxer->getAudioStreamIndex());
-    m_AudioDecoder->setDecodeOneFrameCallback([&](AVFrame *avFrame){
+    m_AudioDecoder->setDecodeOneFrameCallback([&](AVFrame *avFrame) {
         decodeOneAudioFrameCallBack(avFrame);
     });
 
@@ -99,28 +99,32 @@ void FFmpegPlayer::start() {
     m_Demuxer->start();
     m_VideoDecoder->start();
     m_AudioDecoder->start();
+    m_AudioRender->start();
 }
 
 void FFmpegPlayer::demuxOnePacketCallBack(AVPacket *avPacket) {
 //    LOGI(LOG_TAG,"demuxOnePacketCallBack streamIndex = %d",streamIndex);
-    if(avPacket->stream_index == m_Demuxer->getVideoStreamIndex()){
+    if (avPacket->stream_index == m_Demuxer->getVideoStreamIndex()) {
         m_VideoDecoder->putAVPacket(avPacket);
     }
-    if(avPacket->stream_index == m_Demuxer->getAudioStreamIndex()){
+    if (avPacket->stream_index == m_Demuxer->getAudioStreamIndex()) {
         m_AudioDecoder->putAVPacket(avPacket);
     }
 }
 
-void FFmpegPlayer::decodeOneVideoFrameCallBack(AVFrame *avFrame){
+void FFmpegPlayer::decodeOneVideoFrameCallBack(AVFrame *avFrame) {
     av_frame_free(&avFrame);
 }
 
-void FFmpegPlayer::decodeOneAudioFrameCallBack(AVFrame *avFrame){
-    AVFrame *filteFrame= m_AudioFilter->filterFrame(avFrame);
-    if(filteFrame){
-        av_frame_free(&filteFrame);
-    }
+void FFmpegPlayer::decodeOneAudioFrameCallBack(AVFrame *avFrame) {
+    AVFrame *filteFrame = m_AudioFilter->filterFrame(avFrame);
     av_frame_free(&avFrame);
+    if (filteFrame) {
+        filteFrame->format = AV_SAMPLE_FMT_S16;
+        filteFrame->channels = 2;
+        filteFrame->channel_layout = AV_CH_LAYOUT_STEREO;
+        m_AudioRender->putAVFrame(filteFrame);
+    }
 }
 
 

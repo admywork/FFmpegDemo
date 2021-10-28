@@ -5,6 +5,9 @@
 #ifndef FFMPEGDEMO_AUDIOFILTER_H
 #define FFMPEGDEMO_AUDIOFILTER_H
 
+#include <iostream>
+#include <fstream>
+
 struct AVFrame;
 struct AVFilterGraph;
 struct AVRational;
@@ -18,6 +21,10 @@ public:
     ~AudioFilter();
 
     AVFrame* filterFrame(AVFrame *srcFrame);
+
+    std::fstream fstream;
+
+    void writePCM(AVFrame *avFrame);
 
 private:
 

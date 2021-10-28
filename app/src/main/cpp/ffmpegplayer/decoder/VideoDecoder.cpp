@@ -2,6 +2,8 @@
 // Created by 付安栋 on 2021/10/20.
 //
 
+#pragma once
+
 #include "VideoDecoder.h"
 #include "ALog.h"
 

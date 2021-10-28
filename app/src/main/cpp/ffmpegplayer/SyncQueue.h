@@ -1,4 +1,6 @@
 //SyncQueue.hpp
+#pragma once
+
 #include <list>
 #include <mutex>
 #include <condition_variable>

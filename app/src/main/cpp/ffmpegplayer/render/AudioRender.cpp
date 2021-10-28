@@ -2,8 +2,19 @@
 // Created by 付安栋 on 2021/10/27.
 //
 
+#pragma once
+
 #include "AudioRender.h"
+#include "SyncQueue.h"
 #include "ALog.h"
+
+#ifdef __cplusplus
+extern "C"{
+#endif
+#include "libavutil/frame.h"
+#ifdef __cplusplus
+}
+#endif
 
 #define LOG_TAG "AudioRender"
 
@@ -16,6 +27,7 @@ AudioRender::~AudioRender() {
 }
 
 void AudioRender::init() {
+    m_SyncQueue = new SyncQueue<AVFrame*>(10);
     createEngine();
 }
 
@@ -111,12 +123,37 @@ void AudioRender::createEngine() {
     }
 }
 
-void AudioRender::callback(SLAndroidSimpleBufferQueueItf bufferQueue, void *context) {
-    auto *render = static_cast<AudioRender *>(context);
-    render->HandleAudioFrameQueue();
+void AudioRender::start() {
+    if(!m_LoopThread){
+        m_LoopThread = new std::thread(renderLoop, this);
+    }
+    (*m_AudioPlayerItf)->SetPlayState(m_AudioPlayerItf, SL_PLAYSTATE_PLAYING);
+    callback(m_BufferQueueItf, this);
 }
 
-void AudioRender::HandleAudioFrameQueue() {
+void AudioRender::callback(SLAndroidSimpleBufferQueueItf bufferQueue, void *context) {
+    auto *render = static_cast<AudioRender *>(context);
+    render->handleAudioFrameQueue();
+}
+
+void AudioRender::handleAudioFrameQueue() {
     if (m_AudioPlayerItf == nullptr) return;
 
+    AVFrame *avFrame;
+    m_SyncQueue->take(avFrame);
+    int bufferSize = av_samples_get_buffer_size(nullptr, 2, avFrame->nb_samples,
+                               static_cast<AVSampleFormat>(avFrame->format), 1);
+    SLresult result = (*m_BufferQueueItf)->Enqueue(m_BufferQueueItf, avFrame->data, (SLuint32) bufferSize);
+    if (result == SL_RESULT_SUCCESS) {
+
+    }
+}
+
+void AudioRender::putAVFrame(AVFrame *avFrame) {
+    m_SyncQueue->put(avFrame);
+}
+
+void AudioRender::renderLoop(AudioRender *audioRender) {
+    AVFrame *avFrame;
+    audioRender->m_SyncQueue->take(avFrame);
 }
