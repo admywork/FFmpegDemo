@@ -114,13 +114,6 @@ void AudioRender::createEngine() {
         LOGE(LOG_TAG,"createAudioPlayer RegisterCallback fail. ret=%d", ret);
         return;
     }
-
-    ret = (*m_AudioPlayerObj)->GetInterface(m_AudioPlayerObj, SL_IID_VOLUME,
-                                               &m_AudioPlayerVolume);
-    if (ret != SL_RESULT_SUCCESS) {
-        LOGE(LOG_TAG,"createAudioPlayer GetInterface SL_IID_VOLUME fail. ret=%d", ret);
-        return;
-    }
 }
 
 void AudioRender::start() {
@@ -138,14 +131,17 @@ void AudioRender::callback(SLAndroidSimpleBufferQueueItf bufferQueue, void *cont
 
 void AudioRender::handleAudioFrameQueue() {
     if (m_AudioPlayerItf == nullptr) return;
-
     AVFrame *avFrame;
     m_SyncQueue->take(avFrame);
-    int bufferSize = av_samples_get_buffer_size(nullptr, 2, avFrame->nb_samples,
+    int bufferSize = av_samples_get_buffer_size(avFrame->linesize, 2, avFrame->nb_samples,
                                static_cast<AVSampleFormat>(avFrame->format), 1);
-    SLresult result = (*m_BufferQueueItf)->Enqueue(m_BufferQueueItf, avFrame->data, (SLuint32) bufferSize);
-    if (result == SL_RESULT_SUCCESS) {
-
+    delete m_Buffer;
+    m_Buffer = new uint8_t[bufferSize]{0};
+    memcpy(m_Buffer, avFrame->data[0], bufferSize);
+    SLresult result = (*m_BufferQueueItf)->Enqueue(m_BufferQueueItf, m_Buffer, (SLuint32) bufferSize);
+    if (result != SL_RESULT_SUCCESS) {
+        LOGE(LOG_TAG,"createAudioPlayer Enqueue ret=%d", result);
+        return;
     }
 }
 

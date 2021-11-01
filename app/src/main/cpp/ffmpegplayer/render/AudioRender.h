@@ -35,10 +35,12 @@ private:
     SLObjectItf m_AudioPlayerObj = nullptr;
     SLPlayItf m_AudioPlayerItf = nullptr;
 
-    SLVolumeItf m_AudioPlayerVolume = nullptr;
+//    SLVolumeItf m_AudioPlayerVolume = nullptr;
     SLAndroidSimpleBufferQueueItf m_BufferQueueItf;
 
     SyncQueue<AVFrame*> *m_SyncQueue;
+
+    uint8_t *m_Buffer = nullptr;
 
     std::thread *m_LoopThread = nullptr;
 
