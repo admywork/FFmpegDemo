@@ -15,6 +15,10 @@ public:
 
     ~VideoDecoder();
 
+    int getVideoWidth();
+
+    int getVideoHeight();
+
     virtual void onDecodeReady();
 
     virtual void onFrameAvailable(AVFrame *avFrame);

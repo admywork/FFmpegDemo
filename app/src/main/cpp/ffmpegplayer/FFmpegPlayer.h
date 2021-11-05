@@ -32,6 +32,14 @@ public:
 
     void start();
 
+    int getVideoWidth();
+
+    int getVideoHeight();
+
+    long getVideoDuration();
+
+    int getVideoRotation();
+
 private:
 
     std::string m_Path;

@@ -47,6 +47,11 @@ public:
         m_DemuxOnePacketCallback = callback;
     }
 
+    int getVideoWidth();
+    int getVideoHeight();
+    int64_t getVideoDuration();
+    int getVideoRotation();
+
 private:
     //封装格式上下文
     AVFormatContext *m_AVFormatContext = nullptr;
@@ -67,6 +72,8 @@ private:
 
     //总时长 ms
     long m_Duration = 0;
+    //旋转角度
+    int m_Rotation = 0;
 
     std::function<void(AVPacket *avPacket)> m_DemuxOnePacketCallback;
 

@@ -32,7 +32,9 @@ int Demuxer::init(const std::string &filePath) {
                                              0);
     m_VideoStream = m_AVFormatContext->streams[m_VideoStreamIndex];
     m_AudioStream = m_AVFormatContext->streams[m_AudioStreamIndex];
+
     m_Duration = m_AVFormatContext->duration * 1000 / AV_TIME_BASE;//us to ms
+
     LOGI(LOG_TAG, "audioStreamIndex = %d, videoStreamIndex = %d,m_Duration = %ld ms",
          m_AudioStreamIndex, m_VideoStreamIndex, m_Duration);
 
@@ -58,4 +60,29 @@ void Demuxer::demuxLoop(Demuxer *demuxer) {
         }
     } while (ret >= 0);
     LOGI(LOG_TAG, "demuxLoop end!");
+}
+
+int Demuxer::getVideoWidth() {
+    return m_VideoStream->codecpar->width;
+}
+
+int Demuxer::getVideoHeight() {
+    return m_VideoStream->codecpar->height;
+}
+
+int64_t Demuxer::getVideoDuration() {
+    return m_Duration;
+}
+
+int Demuxer::getVideoRotation() {
+    AVDictionaryEntry *tag = nullptr;
+    int rotate;
+    tag = av_dict_get(m_VideoStream->metadata, "rotate", tag, 0);
+    if (tag == nullptr) {
+        rotate = 0;
+    } else {
+        rotate = atoi(tag->value);
+        rotate %= 360;
+    }
+    return rotate;
 }

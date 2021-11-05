@@ -7,6 +7,15 @@
 #include "VideoDecoder.h"
 #include "ALog.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include "libavformat/avformat.h"
+#include "libavcodec/avcodec.h"
+#ifdef __cplusplus
+}
+#endif
+
 #define LOG_TAG "VideoDecoder"
 
 VideoDecoder::VideoDecoder() {
@@ -22,7 +31,7 @@ void VideoDecoder::onDecodeReady() {
 }
 
 void VideoDecoder::onFrameAvailable(AVFrame *avFrame) {
-    if(m_DecodeOneFrameCallback){
+    if (m_DecodeOneFrameCallback) {
         m_DecodeOneFrameCallback(avFrame);
     }
 }

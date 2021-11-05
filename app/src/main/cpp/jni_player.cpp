@@ -12,11 +12,20 @@ void setDataSource(JNIEnv *env, jobject thiz,jlong instance,jstring path);
 void prepare(JNIEnv *env, jobject thiz,jlong instance);
 void start(JNIEnv *env, jobject thiz,jlong instance);
 
+int getVideoWidth(JNIEnv *env, jobject thiz,jlong instance);
+int getVideoHeight(JNIEnv *env, jobject thiz,jlong instance);
+int getVideoRotation(JNIEnv *env, jobject thiz,jlong instance);
+long getVideoDuration(JNIEnv *env, jobject thiz,jlong instance);
+
 static JNINativeMethod playerMethods[] = {
         {"native_create", "()J", (void *) create},
         {"native_setDataSource", "(JLjava/lang/String;)V", (void *) setDataSource},
         {"native_prepare", "(J)V", (void *) prepare},
         {"native_start", "(J)V", (void *) start},
+        {"native_getVideoWidth", "(J)I", (void *) getVideoWidth},
+        {"native_getVideoHeight", "(J)I", (void *) getVideoHeight},
+        {"native_getVideoRotation", "(J)I", (void *) getVideoRotation},
+        {"native_getVideoDuration", "(J)J", (void *) getVideoDuration},
         {"native_getInfo", "(J)Ljava/lang/String;", (void *) getInfo},
 };
 
@@ -62,6 +71,30 @@ JNIEXPORT
 void start(JNIEnv *env, jobject thiz, jlong instance){
     auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
     ffmpegPlayer->start();
+}
+
+JNIEXPORT
+int getVideoWidth(JNIEnv *env, jobject thiz, jlong instance){
+    auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
+    ffmpegPlayer->getVideoWidth();
+}
+
+JNIEXPORT
+int getVideoHeight(JNIEnv *env, jobject thiz, jlong instance){
+    auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
+    ffmpegPlayer->getVideoHeight();
+}
+
+JNIEXPORT
+long getVideoDuration(JNIEnv *env, jobject thiz, jlong instance){
+    auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
+    ffmpegPlayer->getVideoDuration();
+}
+
+JNIEXPORT
+int getVideoRotation(JNIEnv *env, jobject thiz, jlong instance){
+    auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
+    ffmpegPlayer->getVideoRotation();
 }
 
 JNIEXPORT

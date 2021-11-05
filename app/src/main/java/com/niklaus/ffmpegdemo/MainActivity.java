@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         binding.sampleText.setText(mFFmpegPlayer.getInfo());
         mFFmpegPlayer.setDataSource(filePath);
         mFFmpegPlayer.prepare();
+
         mFFmpegPlayer.start();
     }
 

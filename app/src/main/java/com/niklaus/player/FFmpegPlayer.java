@@ -25,6 +25,22 @@ public class FFmpegPlayer {
         native_start(mNativeRef);
     }
 
+    public int getVideoWidth(){
+        return native_getVideoWidth(mNativeRef);
+    }
+
+    public int getVideoHeight(){
+        return native_getVideoHeight(mNativeRef);
+    }
+
+    public long getVideoDuration(){
+        return native_getVideoDuration(mNativeRef);
+    }
+
+    public int getVideoRotation(){
+        return native_getVideoRotation(mNativeRef);
+    }
+
 
 
     /************************native方法*****************************/
@@ -33,5 +49,10 @@ public class FFmpegPlayer {
     private native void native_setDataSource(long nativeRef,String path);
     private native void native_prepare(long nativeRef);
     private native void native_start(long nativeRef);
+
+    private native int native_getVideoWidth(long nativeRef);
+    private native int native_getVideoHeight(long nativeRef);
+    private native int native_getVideoRotation(long nativeRef);
+    private native long native_getVideoDuration(long nativeRef);
 
 }
