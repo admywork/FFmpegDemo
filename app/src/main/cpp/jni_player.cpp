@@ -76,25 +76,25 @@ void start(JNIEnv *env, jobject thiz, jlong instance){
 JNIEXPORT
 int getVideoWidth(JNIEnv *env, jobject thiz, jlong instance){
     auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
-    ffmpegPlayer->getVideoWidth();
+    return ffmpegPlayer->getVideoWidth();
 }
 
 JNIEXPORT
 int getVideoHeight(JNIEnv *env, jobject thiz, jlong instance){
     auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
-    ffmpegPlayer->getVideoHeight();
+    return ffmpegPlayer->getVideoHeight();
 }
 
 JNIEXPORT
 long getVideoDuration(JNIEnv *env, jobject thiz, jlong instance){
     auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
-    ffmpegPlayer->getVideoDuration();
+    return ffmpegPlayer->getVideoDuration();
 }
 
 JNIEXPORT
 int getVideoRotation(JNIEnv *env, jobject thiz, jlong instance){
     auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
-    ffmpegPlayer->getVideoRotation();
+    return ffmpegPlayer->getVideoRotation();
 }
 
 JNIEXPORT

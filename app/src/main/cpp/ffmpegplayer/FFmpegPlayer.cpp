@@ -128,15 +128,15 @@ void FFmpegPlayer::decodeOneAudioFrameCallBack(AVFrame *avFrame) {
 }
 
 int FFmpegPlayer::getVideoWidth() {
-    return m_VideoDecoder->getVideoWidth();
+    return m_Demuxer->getVideoWidth();
 }
 
 int FFmpegPlayer::getVideoHeight() {
-    return m_VideoDecoder->getVideoWidth();
+    return m_Demuxer->getVideoHeight();
 }
 
 long FFmpegPlayer::getVideoDuration() {
-    return m_Demuxer->getDuration();
+    return m_Demuxer->getVideoDuration();
 }
 
 int FFmpegPlayer::getVideoRotation() {

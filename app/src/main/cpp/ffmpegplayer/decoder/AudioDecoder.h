@@ -24,7 +24,8 @@ public:
     virtual void onFrameAvailable(AVFrame *avFrame);
 
 private:
-    std::fstream fstream;
+
+    FILE* fd;
 
     void writePCM(AVFrame *avFrame);
 

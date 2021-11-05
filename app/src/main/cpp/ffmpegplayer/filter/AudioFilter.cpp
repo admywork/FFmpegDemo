@@ -21,7 +21,7 @@ extern "C" {
 #define LOG_TAG "AudioFilter"
 
 AudioFilter::AudioFilter() {
-    fstream.open("sdcard/123_f.pcm", std::ios::out);
+    fd = fopen("sdcard/123_f.pcm", "wb");
 }
 
 AudioFilter::~AudioFilter() {
@@ -146,7 +146,7 @@ AVFrame* AudioFilter::filterFrame(AVFrame *avFrame) {
         }
         return nullptr;
     }
-    writePCM(filtFrame);
+//    writePCM(filtFrame);
     return filtFrame;
 }
 
@@ -155,15 +155,10 @@ void AudioFilter::writePCM(AVFrame *avFrame) {
     int bytePerSample = av_get_bytes_per_sample(avSampleFormat);
     if(av_sample_fmt_is_planar(avSampleFormat)) {
         for (int i = 0; i < avFrame->nb_samples; i++) {//拷贝每个采样的数据。
-            fstream.write(
-                    reinterpret_cast<const char *>(avFrame->data[0] + i * bytePerSample),
-                    bytePerSample);
-            fstream.write(
-                    reinterpret_cast<const char *>(avFrame->data[1] + i * bytePerSample),
-                    bytePerSample);
+            fwrite((avFrame->data[0] + i * bytePerSample), 1, bytePerSample, fd);
+            fwrite((avFrame->data[1] + i * bytePerSample), 1, bytePerSample, fd);
         }
     } else {
-        fstream.write(reinterpret_cast<const char *>(avFrame->data[0]),
-                      avFrame->linesize[0]);
+        fwrite(avFrame->data[0], 2, bytePerSample * avFrame->nb_samples, fd);
     }
 }

@@ -22,7 +22,7 @@ public:
 
     AVFrame* filterFrame(AVFrame *srcFrame);
 
-    std::fstream fstream;
+    FILE* fd;
 
     void writePCM(AVFrame *avFrame);
 
