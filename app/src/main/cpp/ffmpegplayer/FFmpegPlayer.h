@@ -6,6 +6,7 @@
 #define FFMPEGDEMO_FFMPEGPLAYER_H
 
 #include <string>
+#include <jni.h>
 
 class Demuxer;
 class VideoDecoder;
@@ -39,6 +40,8 @@ public:
     long getVideoDuration();
 
     int getVideoRotation();
+
+    void setPreview(JNIEnv *pEnv, jobject *pJobject);
 
 private:
 

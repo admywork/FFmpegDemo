@@ -1,6 +1,8 @@
 package com.niklaus.player;
 
 
+import android.view.Surface;
+
 public class FFmpegPlayer {
 
     private long mNativeRef;
@@ -41,6 +43,10 @@ public class FFmpegPlayer {
         return native_getVideoRotation(mNativeRef);
     }
 
+    public void setPreview(Surface surface) {
+        native_setPreview(mNativeRef,surface);
+    }
+
 
 
     /************************native方法*****************************/
@@ -54,5 +60,5 @@ public class FFmpegPlayer {
     private native int native_getVideoHeight(long nativeRef);
     private native int native_getVideoRotation(long nativeRef);
     private native long native_getVideoDuration(long nativeRef);
-
+    private native void native_setPreview(long nativeRef,Surface surface);
 }

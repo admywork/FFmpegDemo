@@ -1,4 +1,6 @@
 #include <jni.h>
+#include <android/native_window.h>
+#include <android/native_window_jni.h>
 #include "ALog.h"
 #include "FFmpegPlayer.h"
 
@@ -16,6 +18,7 @@ int getVideoWidth(JNIEnv *env, jobject thiz,jlong instance);
 int getVideoHeight(JNIEnv *env, jobject thiz,jlong instance);
 int getVideoRotation(JNIEnv *env, jobject thiz,jlong instance);
 long getVideoDuration(JNIEnv *env, jobject thiz,jlong instance);
+void setPreview(JNIEnv *env, jobject thiz,jlong instance,jobject jSurface);
 
 static JNINativeMethod playerMethods[] = {
         {"native_create", "()J", (void *) create},
@@ -27,6 +30,7 @@ static JNINativeMethod playerMethods[] = {
         {"native_getVideoRotation", "(J)I", (void *) getVideoRotation},
         {"native_getVideoDuration", "(J)J", (void *) getVideoDuration},
         {"native_getInfo", "(J)Ljava/lang/String;", (void *) getInfo},
+        {"native_setPreview", "(JLandroid/view/Surface;)V", (void *) setPreview},
 };
 
 JNIEXPORT
@@ -95,6 +99,12 @@ JNIEXPORT
 int getVideoRotation(JNIEnv *env, jobject thiz, jlong instance){
     auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
     return ffmpegPlayer->getVideoRotation();
+}
+
+JNIEXPORT
+void setPreview(JNIEnv *env, jobject thiz, jlong instance,jobject jSurface){
+    auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
+    ffmpegPlayer->setPreview(env,jSurface);
 }
 
 JNIEXPORT

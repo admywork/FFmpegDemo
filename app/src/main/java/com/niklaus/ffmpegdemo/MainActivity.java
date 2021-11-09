@@ -2,10 +2,14 @@ package com.niklaus.ffmpegdemo;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.SurfaceHolder;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.getkeepsafe.relinker.ReLinker;
@@ -48,6 +52,16 @@ public class MainActivity extends AppCompatActivity {
         mFFmpegPlayer.setDataSource(filePath);
         mFFmpegPlayer.prepare();
         Logger.i("videoWidth = "+ mFFmpegPlayer.getVideoWidth() + " videoHeight = "+ mFFmpegPlayer.getVideoHeight() +" videoDuration = "+ mFFmpegPlayer.getVideoDuration() +" videoRotation = "+ mFFmpegPlayer.getVideoRotation());
+
+        int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
+        ViewGroup.LayoutParams layoutParams = binding.surfaceview.getLayoutParams();
+        layoutParams.width = screenWidth;
+        layoutParams.height = (int) (1.000f * layoutParams.width * mFFmpegPlayer.getVideoHeight() / mFFmpegPlayer.getVideoWidth());
+        binding.surfaceview.setLayoutParams(layoutParams);
+
+        SurfaceHolder holder = binding.surfaceview.getHolder();
+        mFFmpegPlayer.setPreview(holder.getSurface());
+        holder.getSurface();
 
         mFFmpegPlayer.start();
     }

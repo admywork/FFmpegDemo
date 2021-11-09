@@ -143,4 +143,8 @@ int FFmpegPlayer::getVideoRotation() {
     return m_Demuxer->getVideoRotation();
 }
 
+void FFmpegPlayer::setPreview(JNIEnv *env, jobject *jobject) {
+
+}
+
 
