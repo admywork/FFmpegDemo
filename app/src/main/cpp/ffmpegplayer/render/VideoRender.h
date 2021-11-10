@@ -13,6 +13,8 @@ public:
     ~VideoRender();
 
     void init();
+
+    void setPreview(JNIEnv *env, jobject jSurface);
 };
 
 

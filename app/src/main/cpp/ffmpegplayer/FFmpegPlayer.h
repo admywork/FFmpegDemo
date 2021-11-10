@@ -12,6 +12,8 @@ class Demuxer;
 class VideoDecoder;
 class AudioDecoder;
 class AudioFilter;
+class VideoFilter;
+class VideoRender;
 class AudioRender;
 
 struct AVPacket;
@@ -41,7 +43,7 @@ public:
 
     int getVideoRotation();
 
-    void setPreview(JNIEnv *pEnv, jobject *pJobject);
+    void setPreview(JNIEnv *pEnv, jobject jSurface);
 
 private:
 
@@ -50,7 +52,9 @@ private:
     std::unique_ptr<Demuxer> m_Demuxer;
     std::unique_ptr<VideoDecoder> m_VideoDecoder;
     std::unique_ptr<AudioDecoder> m_AudioDecoder;
+    std::unique_ptr<VideoFilter> m_VideoFilter;
     std::unique_ptr<AudioFilter> m_AudioFilter;
+    std::unique_ptr<VideoRender> m_VideoRender;
     std::unique_ptr<AudioRender> m_AudioRender;
 
 

@@ -9,7 +9,9 @@
 #include "Demuxer.h"
 #include "VideoDecoder.h"
 #include "AudioDecoder.h"
+#include "VideoFilter.h"
 #include "AudioFilter.h"
+#include "VideoRender.h"
 #include "AudioRender.h"
 #include "ALog.h"
 
@@ -87,7 +89,11 @@ void FFmpegPlayer::prepare() {
         decodeOneAudioFrameCallBack(avFrame);
     });
 
+    m_VideoFilter = std::make_unique<VideoFilter>();
     m_AudioFilter = std::make_unique<AudioFilter>();
+
+    m_VideoRender = std::make_unique<VideoRender>();
+    m_AudioRender->init();
 
     m_AudioRender = std::make_unique<AudioRender>();
     m_AudioRender->init();
@@ -143,8 +149,8 @@ int FFmpegPlayer::getVideoRotation() {
     return m_Demuxer->getVideoRotation();
 }
 
-void FFmpegPlayer::setPreview(JNIEnv *env, jobject *jobject) {
-
+void FFmpegPlayer::setPreview(JNIEnv *env, jobject jobject) {
+    m_VideoRender->setPreview(env,jobject);
 }
 
 

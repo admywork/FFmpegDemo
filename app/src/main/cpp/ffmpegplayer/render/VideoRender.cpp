@@ -3,3 +3,19 @@
 //
 
 #include "VideoRender.h"
+
+VideoRender::VideoRender() {
+
+}
+
+VideoRender::~VideoRender() {
+
+}
+
+void VideoRender::init() {
+
+}
+
+void VideoRender::setPreview(JNIEnv *env, jobject jSurface) {
+
+}
