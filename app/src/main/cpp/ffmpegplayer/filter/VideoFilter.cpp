@@ -17,7 +17,7 @@ extern "C" {
 }
 #endif
 
-#define LOG_TAG "AudioFilter"
+#define LOG_TAG "VideoFilter"
 
 VideoFilter::VideoFilter() {
 
@@ -27,16 +27,16 @@ VideoFilter::~VideoFilter() {
 
 }
 
-int VideoFilter::init(int width, int height, int pix_fmt, AVRational sample_aspect_ratio,AVRational time_base) {
+int VideoFilter::initFilter(int width, int height, int pix_fmt, AVRational time_base,AVRational sample_aspect_ratio) {
 
-    char *filters_descr = "format=pix_fmts=rgb";
+    char *filters_descr = "format=pix_fmts=rgba";
     char args[512];
     int ret = 0;
     const AVFilter *buffersrc  = avfilter_get_by_name("buffer");
     const AVFilter *buffersink = avfilter_get_by_name("buffersink");
     AVFilterInOut *outputs = avfilter_inout_alloc();
     AVFilterInOut *inputs  = avfilter_inout_alloc();
-    enum AVPixelFormat pix_fmts[] = { AV_PIX_FMT_RGB24, AV_PIX_FMT_NONE };
+    enum AVPixelFormat pix_fmts[] = { AV_PIX_FMT_RGBA, AV_PIX_FMT_NONE };
 
     m_AVFilterGraph = avfilter_graph_alloc();
     if (!outputs || !inputs || !m_AVFilterGraph) {
@@ -114,12 +114,8 @@ int VideoFilter::init(int width, int height, int pix_fmt, AVRational sample_aspe
 }
 
 AVFrame *VideoFilter::filterFrame(AVFrame *srcFrame) {
-    if (!m_AVFilterGraph) {
-        initFilter(srcFrame->width, srcFrame->height, srcFrame->sample_aspect_ratio,
-             srcFrame.time);
-    }
     if (av_buffersrc_add_frame_flags(m_Buffersrc_ctx, srcFrame, AV_BUFFERSRC_FLAG_KEEP_REF) < 0) {
-        LOGE(LOG_TAG, "Error while feeding the audio filtergraph\n");
+        LOGE(LOG_TAG, "Error while feeding the video filtergraph\n");
     }
     AVFrame *filtFrame = av_frame_alloc();
     int ret = av_buffersink_get_frame(m_Buffersink_ctx, filtFrame);

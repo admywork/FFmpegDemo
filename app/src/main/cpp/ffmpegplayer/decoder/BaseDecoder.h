@@ -43,6 +43,10 @@ public:
 
     virtual void onFrameAvailable(AVFrame *avFrame) = 0;
 
+    AVCodecContext* getAVCodecContext(){
+        return m_AVCodecContext;
+    }
+
 protected:
 
     DecoderType m_Type;

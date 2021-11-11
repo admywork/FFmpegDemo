@@ -1,5 +1,6 @@
 package com.niklaus.ffmpegdemo;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
@@ -60,10 +61,23 @@ public class MainActivity extends AppCompatActivity {
         binding.surfaceview.setLayoutParams(layoutParams);
 
         SurfaceHolder holder = binding.surfaceview.getHolder();
-        mFFmpegPlayer.setPreview(holder.getSurface());
-        holder.getSurface();
+        holder.addCallback(new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(@NonNull SurfaceHolder holder) {
+                mFFmpegPlayer.setPreview(holder.getSurface());
+                mFFmpegPlayer.start();
+            }
 
-        mFFmpegPlayer.start();
+            @Override
+            public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
+
+            }
+
+            @Override
+            public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
+
+            }
+        });
     }
 
     private void requestAppPermissions() {

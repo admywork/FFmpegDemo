@@ -47,8 +47,6 @@ private:
     void createEngine();
 
     void handleAudioFrameQueue();
-
-    static void renderLoop(AudioRender *audioRender);
 };
 
 

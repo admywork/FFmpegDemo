@@ -1,11 +1,9 @@
 //
 // Created by 付安栋 on 2021/9/20.
 //
-#pragma once
 
 #include "FFmpegPlayer.h"
 
-#include <memory>
 #include "Demuxer.h"
 #include "VideoDecoder.h"
 #include "AudioDecoder.h"
@@ -90,7 +88,6 @@ void FFmpegPlayer::prepare() {
     });
 
     m_VideoRender = std::make_unique<VideoRender>();
-    m_AudioRender->init();
 
     m_AudioRender = std::make_unique<AudioRender>();
     m_AudioRender->init();
@@ -101,6 +98,7 @@ void FFmpegPlayer::prepare() {
 void FFmpegPlayer::start() {
     m_Demuxer->start();
     m_VideoDecoder->start();
+    m_VideoRender->start();
     m_AudioDecoder->start();
     m_AudioRender->start();
 }
@@ -118,15 +116,20 @@ void FFmpegPlayer::demuxOnePacketCallBack(AVPacket *avPacket) {
 void FFmpegPlayer::decodeOneVideoFrameCallBack(AVFrame *avFrame) {
     if(!m_VideoFilter){
         m_VideoFilter = std::make_unique<VideoFilter>();
-        m_VideoFilter->initFilter(avFrame->width,avFrame->height,avFrame->format,{1,avFrame->sample_rate})
+        AVCodecContext *avCodecContext = m_VideoDecoder->getAVCodecContext();
+        m_VideoFilter->initFilter(avFrame->width,avFrame->height,avFrame->format,m_Demuxer->getVideoStream()->time_base,avCodecContext->sample_aspect_ratio);
     }
+    AVFrame *filteFrame = m_VideoFilter->filterFrame(avFrame);
     av_frame_free(&avFrame);
+    if(filteFrame){
+        m_VideoRender->putAVFrame(filteFrame);
+    }
 }
 
 void FFmpegPlayer::decodeOneAudioFrameCallBack(AVFrame *avFrame) {
     if(!m_AudioFilter){
         m_AudioFilter = std::make_unique<AudioFilter>();
-        m_AudioFilter->init(avFrame->channels,avFrame->sample_rate,avFrame->format,{1,avFrame->sample_rate})
+        m_AudioFilter->init(avFrame->channels,avFrame->sample_rate,avFrame->format,{1,avFrame->sample_rate});
     }
     AVFrame *filteFrame = m_AudioFilter->filterFrame(avFrame);
     av_frame_free(&avFrame);
@@ -155,7 +158,7 @@ int FFmpegPlayer::getVideoRotation() {
 }
 
 void FFmpegPlayer::setPreview(JNIEnv *env, jobject jobject) {
-    m_VideoRender->setPreview(env,jobject);
+    m_VideoRender->setPreview(env,jobject,getVideoWidth(),getVideoHeight());
 }
 
 

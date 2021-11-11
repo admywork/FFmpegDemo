@@ -5,7 +5,6 @@
 #pragma once
 
 #include "AudioRender.h"
-#include "SyncQueue.h"
 #include "ALog.h"
 
 #ifdef __cplusplus
@@ -117,9 +116,6 @@ void AudioRender::createEngine() {
 }
 
 void AudioRender::start() {
-    if(!m_LoopThread){
-        m_LoopThread = new std::thread(renderLoop, this);
-    }
     (*m_AudioPlayerItf)->SetPlayState(m_AudioPlayerItf, SL_PLAYSTATE_PLAYING);
     callback(m_BufferQueueItf, this);
 }
@@ -147,9 +143,4 @@ void AudioRender::handleAudioFrameQueue() {
 
 void AudioRender::putAVFrame(AVFrame *avFrame) {
     m_SyncQueue->put(avFrame);
-}
-
-void AudioRender::renderLoop(AudioRender *audioRender) {
-    AVFrame *avFrame;
-    audioRender->m_SyncQueue->take(avFrame);
 }

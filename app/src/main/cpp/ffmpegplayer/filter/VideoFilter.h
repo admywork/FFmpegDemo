@@ -16,7 +16,7 @@ public:
 
     ~VideoFilter();
 
-    int initFilter(int width, int height, int pix_fmt, AVRational sample_aspect_ratio,AVRational time_base);
+    int initFilter(int width, int height, int pix_fmt, AVRational time_base,AVRational sample_aspect_ratio);
 
     AVFrame* filterFrame(AVFrame *srcFrame);
 
