@@ -118,7 +118,7 @@ AVFrame *VideoFilter::filterFrame(AVFrame *srcFrame) {
         initFilter(srcFrame->width, srcFrame->height, srcFrame->sample_aspect_ratio,
              srcFrame.time);
     }
-    if (av_buffersrc_add_frame_flags(m_Buffersrc_ctx, avFrame, AV_BUFFERSRC_FLAG_KEEP_REF) < 0) {
+    if (av_buffersrc_add_frame_flags(m_Buffersrc_ctx, srcFrame, AV_BUFFERSRC_FLAG_KEEP_REF) < 0) {
         LOGE(LOG_TAG, "Error while feeding the audio filtergraph\n");
     }
     AVFrame *filtFrame = av_frame_alloc();

@@ -16,7 +16,7 @@ public:
 
     ~VideoFilter();
 
-    int init();
+    int initFilter(int width, int height, int pix_fmt, AVRational sample_aspect_ratio,AVRational time_base);
 
     AVFrame* filterFrame(AVFrame *srcFrame);
 
@@ -26,8 +26,6 @@ private:
     AVFilterContext *m_Buffersrc_ctx = nullptr;
 
     AVFilterGraph *m_AVFilterGraph = nullptr;
-
-    int initFilter(int width, int height, int pix_fmt, AVRational sample_aspect_ratio,AVRational time_base);
 };
 
 

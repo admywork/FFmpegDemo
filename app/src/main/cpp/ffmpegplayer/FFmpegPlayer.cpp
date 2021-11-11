@@ -89,9 +89,6 @@ void FFmpegPlayer::prepare() {
         decodeOneAudioFrameCallBack(avFrame);
     });
 
-    m_VideoFilter = std::make_unique<VideoFilter>();
-    m_AudioFilter = std::make_unique<AudioFilter>();
-
     m_VideoRender = std::make_unique<VideoRender>();
     m_AudioRender->init();
 
@@ -119,10 +116,18 @@ void FFmpegPlayer::demuxOnePacketCallBack(AVPacket *avPacket) {
 }
 
 void FFmpegPlayer::decodeOneVideoFrameCallBack(AVFrame *avFrame) {
+    if(!m_VideoFilter){
+        m_VideoFilter = std::make_unique<VideoFilter>();
+        m_VideoFilter->initFilter(avFrame->width,avFrame->height,avFrame->format,{1,avFrame->sample_rate})
+    }
     av_frame_free(&avFrame);
 }
 
 void FFmpegPlayer::decodeOneAudioFrameCallBack(AVFrame *avFrame) {
+    if(!m_AudioFilter){
+        m_AudioFilter = std::make_unique<AudioFilter>();
+        m_AudioFilter->init(avFrame->channels,avFrame->sample_rate,avFrame->format,{1,avFrame->sample_rate})
+    }
     AVFrame *filteFrame = m_AudioFilter->filterFrame(avFrame);
     av_frame_free(&avFrame);
     if (filteFrame) {

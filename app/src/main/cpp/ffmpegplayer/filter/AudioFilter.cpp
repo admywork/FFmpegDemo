@@ -130,10 +130,6 @@ int AudioFilter::init(int channels, int sample_rate, int sample_fmt, AVRational 
 }
 
 AVFrame* AudioFilter::filterFrame(AVFrame *avFrame) {
-    if (!m_AVFilterGraph) {
-        init(avFrame->channels, avFrame->sample_rate, avFrame->format,
-             {1, avFrame->sample_rate});
-    }
     if (av_buffersrc_add_frame_flags(m_Buffersrc_ctx, avFrame, AV_BUFFERSRC_FLAG_KEEP_REF) < 0) {
         LOGE(LOG_TAG, "Error while feeding the audio filtergraph\n");
     }

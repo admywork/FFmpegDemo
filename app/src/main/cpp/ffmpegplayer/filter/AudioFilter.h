@@ -20,6 +20,8 @@ public:
 
     ~AudioFilter();
 
+    int init(int channels,int sample_rate,int sample_fmt,AVRational time_base);
+
     AVFrame* filterFrame(AVFrame *srcFrame);
 
     FILE* fd;
@@ -33,8 +35,6 @@ private:
     AVFilterContext *m_Buffersrc_ctx = nullptr;
 
     AVFilterGraph *m_AVFilterGraph = nullptr;
-
-    int init(int channels,int sample_rate,int sample_fmt,AVRational time_base);
 
 };
 
