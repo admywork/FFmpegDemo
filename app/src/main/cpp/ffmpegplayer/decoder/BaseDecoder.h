@@ -71,12 +71,19 @@ protected:
 
     std::function<void(AVFrame *avFrame)> m_DecodeOneFrameCallback;
 
+    struct timeval m_lastTimeval;
+
 private:
+
+    double m_CurTimeStamp;
+
     char *getLogTag() {
         return const_cast<char *>(m_Type == DECODER_TYPE_VIDEO ? "VideoDecoder" : "AudioDecoder");
     }
 
     int decodeOnePacket(AVPacket *avPacket);
+
+    void updateTimeStamp(AVFrame *avFrame);
 
 };
 

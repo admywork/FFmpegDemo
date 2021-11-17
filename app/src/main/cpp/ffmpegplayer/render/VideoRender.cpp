@@ -74,6 +74,7 @@ void VideoRender::renderLoop(VideoRender *videoRender) {
         LOGI(LOG_TAG,"renderLoop avFrame dts = %ld",avFrame->pkt_dts);
         videoRender->renderFrame(avFrame);
         avFrame = nullptr;
+        av_usleep(33333);
         videoRender->m_SyncQueue->take(avFrame);
     } while (avFrame);
 }

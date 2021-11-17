@@ -119,10 +119,11 @@ void FFmpegPlayer::decodeOneVideoFrameCallBack(AVFrame *avFrame) {
         AVCodecContext *avCodecContext = m_VideoDecoder->getAVCodecContext();
         m_VideoFilter->initFilter(avFrame->width,avFrame->height,avFrame->format,m_Demuxer->getVideoStream()->time_base,avCodecContext->sample_aspect_ratio);
     }
-    AVFrame *filteFrame = m_VideoFilter->filterFrame(avFrame);
+    LOGI(LOG_TAG,"video frame pkt_dts = %ld, video frame pts = %ld",avFrame->pkt_dts,avFrame->pts);
+    AVFrame *filterFrame = m_VideoFilter->filterFrame(avFrame);
     av_frame_free(&avFrame);
-    if(filteFrame){
-        m_VideoRender->putAVFrame(filteFrame);
+    if(filterFrame){
+        m_VideoRender->putAVFrame(filterFrame);
     }
 }
 
@@ -131,13 +132,14 @@ void FFmpegPlayer::decodeOneAudioFrameCallBack(AVFrame *avFrame) {
         m_AudioFilter = std::make_unique<AudioFilter>();
         m_AudioFilter->init(avFrame->channels,avFrame->sample_rate,avFrame->format,{1,avFrame->sample_rate});
     }
-    AVFrame *filteFrame = m_AudioFilter->filterFrame(avFrame);
+    LOGI(LOG_TAG,"audio frame pkt_dts = %ld, audio frame pts = %ld",avFrame->pkt_dts,avFrame->pts);
+    AVFrame *filterFrame = m_AudioFilter->filterFrame(avFrame);
     av_frame_free(&avFrame);
-    if (filteFrame) {
-        filteFrame->format = AV_SAMPLE_FMT_S16;
-        filteFrame->channels = 2;
-        filteFrame->channel_layout = AV_CH_LAYOUT_STEREO;
-        m_AudioRender->putAVFrame(filteFrame);
+    if (filterFrame) {
+        filterFrame->format = AV_SAMPLE_FMT_S16;
+        filterFrame->channels = 2;
+        filterFrame->channel_layout = AV_CH_LAYOUT_STEREO;
+        m_AudioRender->putAVFrame(filterFrame);
     }
 }
 
