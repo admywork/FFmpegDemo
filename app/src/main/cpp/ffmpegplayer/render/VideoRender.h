@@ -10,6 +10,7 @@
 #include <android/native_window.h>
 #include "SyncQueue.h"
 
+struct AVStream;
 struct AVFrame;
 
 class VideoRender {
@@ -17,7 +18,7 @@ public:
     VideoRender();
     ~VideoRender();
 
-    void init();
+    void init(AVStream* stream);
 
     void setPreview(JNIEnv *env, jobject jSurface,int width,int height);
 
@@ -26,6 +27,14 @@ public:
     void start();
 
     void renderFrame(AVFrame* avframe);
+
+    void setTimeStampCallBack(std::function<double()> callBack){
+        this->m_TimeStampCallBack = callBack;
+    }
+
+    std::function<int64_t()> getTimeStampCallBack(){
+        return m_TimeStampCallBack;
+    }
 
 private:
 
@@ -45,6 +54,11 @@ private:
 
     static void renderLoop(VideoRender *audioRender);
 
+    std::function<double()> m_TimeStampCallBack;
+
+    static double updateTimeStamp(AVFrame *avFrame,AVStream *stream);
+
+    AVStream* m_AVStream;
 };
 
 

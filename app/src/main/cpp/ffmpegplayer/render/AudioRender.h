@@ -9,6 +9,7 @@
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
 
+struct AVStream;
 struct AVFrame;
 
 class AudioRender {
@@ -17,13 +18,17 @@ public:
 
     ~AudioRender();
 
-    void init();
+    void init(AVStream* stream);
 
     static void callback(SLAndroidSimpleBufferQueueItf bufferQueue, void *context);
 
     void start();
 
     void putAVFrame(AVFrame *avFrame);
+
+    double getTimeStamp(){
+        return m_CurTimeStamp;
+    }
 
 private:
 
@@ -47,6 +52,12 @@ private:
     void createEngine();
 
     void handleAudioFrameQueue();
+
+    void updateTimeStamp(AVFrame *avFrame);
+
+    double m_CurTimeStamp;
+
+    AVStream *m_Stream;
 };
 
 

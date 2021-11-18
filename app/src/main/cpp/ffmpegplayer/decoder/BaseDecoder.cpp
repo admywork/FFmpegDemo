@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 BaseDecoder::BaseDecoder() {
-    m_SyncQueue = new SyncQueue<AVPacket *>(10);
+    m_SyncQueue = new SyncQueue<AVPacket *>(100);
 }
 
 BaseDecoder::~BaseDecoder() {
@@ -94,5 +94,5 @@ void BaseDecoder::updateTimeStamp(AVFrame *avFrame) {
         m_CurTimeStamp = 0;
     }
     m_CurTimeStamp = (int64_t) ((m_CurTimeStamp * av_q2d(m_AVStream->time_base)) * 1000);
-    LOGI(getLogTag(),"m_CurTimeStamp = %f",m_CurTimeStamp);
+//    LOGI(getLogTag(),"m_CurTimeStamp = %f",m_CurTimeStamp);
 }

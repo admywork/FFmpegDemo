@@ -11,6 +11,7 @@
 extern "C"{
 #endif
 #include "libavutil/frame.h"
+#include "libavformat/avformat.h"
 #ifdef __cplusplus
 }
 #endif
@@ -25,7 +26,8 @@ AudioRender::~AudioRender() {
 
 }
 
-void AudioRender::init() {
+void AudioRender::init(AVStream* stream) {
+    m_Stream = stream;
     m_SyncQueue = new SyncQueue<AVFrame*>(10);
     createEngine();
 }
@@ -134,11 +136,23 @@ void AudioRender::handleAudioFrameQueue() {
     delete m_Buffer;
     m_Buffer = new uint8_t[bufferSize]{0};
     memcpy(m_Buffer, avFrame->data[0], bufferSize);
+    updateTimeStamp(avFrame);
     SLresult result = (*m_BufferQueueItf)->Enqueue(m_BufferQueueItf, m_Buffer, (SLuint32) bufferSize);
     if (result != SL_RESULT_SUCCESS) {
         LOGE(LOG_TAG,"createAudioPlayer Enqueue ret=%d", result);
         return;
     }
+}
+
+void AudioRender::updateTimeStamp(AVFrame *avFrame) {
+    if (avFrame->pkt_dts != AV_NOPTS_VALUE) {
+        m_CurTimeStamp = avFrame->pkt_dts;
+    } else if (avFrame->pts != AV_NOPTS_VALUE) {
+        m_CurTimeStamp = avFrame->pts;
+    } else {
+        m_CurTimeStamp = 0;
+    }
+    m_CurTimeStamp = (int64_t) ((m_CurTimeStamp * av_q2d(m_Stream->time_base)) * 1000);
 }
 
 void AudioRender::putAVFrame(AVFrame *avFrame) {

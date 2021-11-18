@@ -28,7 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private String filePath = Environment.getExternalStorageDirectory().getPath()+"/bluetooth/heng_10.mp4";
+//    private String filePath = Environment.getExternalStorageDirectory().getPath()+"/bluetooth/heng_10.mp4";
+    private String filePath = Environment.getExternalStorageDirectory().getPath()+"/哆啦A梦：伴我同行2.mp4";
 
     private ActivityMainBinding binding;
     private FFmpegPlayer mFFmpegPlayer;

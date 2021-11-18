@@ -88,9 +88,14 @@ void FFmpegPlayer::prepare() {
     });
 
     m_VideoRender = std::make_unique<VideoRender>();
+    m_VideoRender->init(m_Demuxer->getVideoStream());
 
     m_AudioRender = std::make_unique<AudioRender>();
-    m_AudioRender->init();
+    m_AudioRender->init(m_Demuxer->getAudioStream());
+
+    m_VideoRender->setTimeStampCallBack([=]()-> double{
+        return m_AudioRender->getTimeStamp();
+    });
 
     av_log_set_callback(log_callback);
 }

@@ -12,7 +12,8 @@
 extern "C" {
 #endif
 #include "libavutil/frame.h"
-#include <libavutil/time.h>
+#include "libavutil/time.h"
+#include "libavformat/avformat.h"
 #ifdef __cplusplus
 }
 #endif
@@ -27,8 +28,8 @@ VideoRender::~VideoRender() {
 
 }
 
-void VideoRender::init() {
-
+void VideoRender::init(AVStream* stream) {
+    m_AVStream = stream;
 }
 
 void VideoRender::setPreview(JNIEnv *env, jobject jSurface,int videoWidth,int videoHeight) {
@@ -71,10 +72,32 @@ void VideoRender::renderLoop(VideoRender *videoRender) {
     AVFrame *avFrame;
     videoRender->m_SyncQueue->take(avFrame);
     do {
-        LOGI(LOG_TAG,"renderLoop avFrame dts = %ld",avFrame->pkt_dts);
+//        LOGI(LOG_TAG,"renderLoop avFrame dts = %ld",avFrame->pkt_dts);
+        double audioTimeStamp = videoRender->m_TimeStampCallBack();
+//        LOGI(LOG_TAG,"renderLoop audioTimeStamp = %f",audioTimeStamp);
         videoRender->renderFrame(avFrame);
+        double videoTimeStamp = updateTimeStamp(avFrame,videoRender->m_AVStream);
+        while (videoTimeStamp >audioTimeStamp){
+            int sleepTime = (videoTimeStamp - audioTimeStamp) * 1000;
+//            LOGI(LOG_TAG,"renderLoop sleepTime = %d",sleepTime);
+            av_usleep(sleepTime);
+            audioTimeStamp = videoRender->m_TimeStampCallBack();
+        }
+        av_frame_free(&avFrame);
         avFrame = nullptr;
-        av_usleep(33333);
         videoRender->m_SyncQueue->take(avFrame);
     } while (avFrame);
+}
+
+double VideoRender::updateTimeStamp(AVFrame *avFrame,AVStream *stream) {
+    double curTimeStamp;
+    if (avFrame->pkt_dts != AV_NOPTS_VALUE) {
+        curTimeStamp = avFrame->pkt_dts;
+    } else if (avFrame->pts != AV_NOPTS_VALUE) {
+        curTimeStamp = avFrame->pts;
+    } else {
+        curTimeStamp = 0;
+    }
+    curTimeStamp =  (curTimeStamp * av_q2d(stream->time_base)) * 1000;
+    return curTimeStamp;
 }
