@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.SurfaceHolder;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -46,6 +47,19 @@ public class MainActivity extends AppCompatActivity {
 
         requestAppPermissions();
 
+        binding.btnPause.setOnClickListener(new View.OnClickListener() {
+            boolean shouldPause;
+            @Override
+            public void onClick(View v) {
+                shouldPause = !shouldPause;
+                if(shouldPause){
+                    mFFmpegPlayer.pause();
+                }else{
+                    mFFmpegPlayer.start();
+                }
+                binding.btnPause.setText(shouldPause?"播放":"暂停");
+            }
+        });
     }
 
     private void initPlayer(){
@@ -115,4 +129,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 }

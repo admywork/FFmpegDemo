@@ -13,6 +13,7 @@ jstring getInfo(JNIEnv *env, jobject thiz,jlong instance);
 void setDataSource(JNIEnv *env, jobject thiz,jlong instance,jstring path);
 void prepare(JNIEnv *env, jobject thiz,jlong instance);
 void start(JNIEnv *env, jobject thiz,jlong instance);
+void pause(JNIEnv *env, jobject thiz,jlong instance);
 
 int getVideoWidth(JNIEnv *env, jobject thiz,jlong instance);
 int getVideoHeight(JNIEnv *env, jobject thiz,jlong instance);
@@ -25,6 +26,7 @@ static JNINativeMethod playerMethods[] = {
         {"native_setDataSource", "(JLjava/lang/String;)V", (void *) setDataSource},
         {"native_prepare", "(J)V", (void *) prepare},
         {"native_start", "(J)V", (void *) start},
+        {"native_pause", "(J)V", (void *) pause},
         {"native_getVideoWidth", "(J)I", (void *) getVideoWidth},
         {"native_getVideoHeight", "(J)I", (void *) getVideoHeight},
         {"native_getVideoRotation", "(J)I", (void *) getVideoRotation},
@@ -75,6 +77,12 @@ JNIEXPORT
 void start(JNIEnv *env, jobject thiz, jlong instance){
     auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
     ffmpegPlayer->start();
+}
+
+JNIEXPORT
+void pause(JNIEnv *env, jobject thiz, jlong instance){
+    auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
+    ffmpegPlayer->pause();
 }
 
 JNIEXPORT

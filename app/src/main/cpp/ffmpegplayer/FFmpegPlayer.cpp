@@ -108,6 +108,10 @@ void FFmpegPlayer::start() {
     m_AudioRender->start();
 }
 
+void FFmpegPlayer::pause() {
+    m_AudioRender->pause();
+}
+
 void FFmpegPlayer::demuxOnePacketCallBack(AVPacket *avPacket) {
 //    LOGI(LOG_TAG,"demuxOnePacketCallBack streamIndex = %d",streamIndex);
     if (avPacket->stream_index == m_Demuxer->getVideoStreamIndex()) {

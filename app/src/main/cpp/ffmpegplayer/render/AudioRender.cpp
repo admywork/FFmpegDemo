@@ -122,6 +122,10 @@ void AudioRender::start() {
     callback(m_BufferQueueItf, this);
 }
 
+void AudioRender::pause() {
+    (*m_AudioPlayerItf)->SetPlayState(m_AudioPlayerItf, SL_PLAYSTATE_PAUSED);
+}
+
 void AudioRender::callback(SLAndroidSimpleBufferQueueItf bufferQueue, void *context) {
     auto *render = static_cast<AudioRender *>(context);
     render->handleAudioFrameQueue();

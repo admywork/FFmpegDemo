@@ -24,6 +24,8 @@ public:
 
     void start();
 
+    void pause();
+
     void putAVFrame(AVFrame *avFrame);
 
     double getTimeStamp(){

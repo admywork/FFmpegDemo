@@ -35,6 +35,8 @@ public:
 
     void start();
 
+    void pause();
+
     int getVideoWidth();
 
     int getVideoHeight();
