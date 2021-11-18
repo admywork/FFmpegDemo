@@ -28,7 +28,7 @@ AudioRender::~AudioRender() {
 
 void AudioRender::init(AVStream* stream) {
     m_Stream = stream;
-    m_SyncQueue = new SyncQueue<AVFrame*>(10);
+    m_SyncQueue = new SyncQueue<AVFrame*>(20);
     createEngine();
 }
 
@@ -140,8 +140,8 @@ void AudioRender::handleAudioFrameQueue() {
     SLresult result = (*m_BufferQueueItf)->Enqueue(m_BufferQueueItf, m_Buffer, (SLuint32) bufferSize);
     if (result != SL_RESULT_SUCCESS) {
         LOGE(LOG_TAG,"createAudioPlayer Enqueue ret=%d", result);
-        return;
     }
+    av_frame_free(&avFrame);
 }
 
 void AudioRender::updateTimeStamp(AVFrame *avFrame) {

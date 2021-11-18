@@ -124,7 +124,7 @@ void FFmpegPlayer::decodeOneVideoFrameCallBack(AVFrame *avFrame) {
         AVCodecContext *avCodecContext = m_VideoDecoder->getAVCodecContext();
         m_VideoFilter->initFilter(avFrame->width,avFrame->height,avFrame->format,m_Demuxer->getVideoStream()->time_base,avCodecContext->sample_aspect_ratio);
     }
-    LOGI(LOG_TAG,"video frame pkt_dts = %ld, video frame pts = %ld",avFrame->pkt_dts,avFrame->pts);
+//    LOGI(LOG_TAG,"video frame pkt_dts = %ld, video frame pts = %ld",avFrame->pkt_dts,avFrame->pts);
     AVFrame *filterFrame = m_VideoFilter->filterFrame(avFrame);
     av_frame_free(&avFrame);
     if(filterFrame){
@@ -137,7 +137,7 @@ void FFmpegPlayer::decodeOneAudioFrameCallBack(AVFrame *avFrame) {
         m_AudioFilter = std::make_unique<AudioFilter>();
         m_AudioFilter->init(avFrame->channels,avFrame->sample_rate,avFrame->format,{1,avFrame->sample_rate});
     }
-    LOGI(LOG_TAG,"audio frame pkt_dts = %ld, audio frame pts = %ld",avFrame->pkt_dts,avFrame->pts);
+//    LOGI(LOG_TAG,"audio frame pkt_dts = %ld, audio frame pts = %ld",avFrame->pkt_dts,avFrame->pts);
     AVFrame *filterFrame = m_AudioFilter->filterFrame(avFrame);
     av_frame_free(&avFrame);
     if (filterFrame) {

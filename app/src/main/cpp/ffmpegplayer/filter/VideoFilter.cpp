@@ -117,15 +117,15 @@ AVFrame *VideoFilter::filterFrame(AVFrame *srcFrame) {
     if (av_buffersrc_add_frame_flags(m_Buffersrc_ctx, srcFrame, AV_BUFFERSRC_FLAG_KEEP_REF) < 0) {
         LOGE(LOG_TAG, "Error while feeding the video filtergraph\n");
     }
-    AVFrame *filtFrame = av_frame_alloc();
-    int ret = av_buffersink_get_frame(m_Buffersink_ctx, filtFrame);
+    AVFrame *filterFrame = av_frame_alloc();
+    int ret = av_buffersink_get_frame(m_Buffersink_ctx, filterFrame);
     if (ret < 0) {
-        av_frame_free(&filtFrame);
+        av_frame_free(&filterFrame);
         if (ret != AVERROR(EAGAIN)) {
             LOGE(LOG_TAG, "av_buffersink_get_frame ret = %d", ret);
         }
         return nullptr;
     }
-//    writePCM(filtFrame);
-    return filtFrame;
+//    writePCM(filterFrame);
+    return filterFrame;
 }

@@ -75,7 +75,6 @@ void VideoRender::renderLoop(VideoRender *videoRender) {
 //        LOGI(LOG_TAG,"renderLoop avFrame dts = %ld",avFrame->pkt_dts);
         double audioTimeStamp = videoRender->m_TimeStampCallBack();
 //        LOGI(LOG_TAG,"renderLoop audioTimeStamp = %f",audioTimeStamp);
-        videoRender->renderFrame(avFrame);
         double videoTimeStamp = updateTimeStamp(avFrame,videoRender->m_AVStream);
         while (videoTimeStamp >audioTimeStamp){
             int sleepTime = (videoTimeStamp - audioTimeStamp) * 1000;
@@ -83,8 +82,8 @@ void VideoRender::renderLoop(VideoRender *videoRender) {
             av_usleep(sleepTime);
             audioTimeStamp = videoRender->m_TimeStampCallBack();
         }
+        videoRender->renderFrame(avFrame);
         av_frame_free(&avFrame);
-        avFrame = nullptr;
         videoRender->m_SyncQueue->take(avFrame);
     } while (avFrame);
 }

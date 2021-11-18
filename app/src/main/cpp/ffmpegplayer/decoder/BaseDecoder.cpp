@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 BaseDecoder::BaseDecoder() {
-    m_SyncQueue = new SyncQueue<AVPacket *>(100);
+    m_SyncQueue = new SyncQueue<AVPacket *>(50);
 }
 
 BaseDecoder::~BaseDecoder() {
