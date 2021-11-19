@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,11 +31,29 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-//    private String filePath = Environment.getExternalStorageDirectory().getPath()+"/bluetooth/heng_10.mp4";
-    private String filePath = Environment.getExternalStorageDirectory().getPath()+"/哆啦A梦：伴我同行2.mp4";
+    private String filePath = Environment.getExternalStorageDirectory().getPath()+"/bluetooth/heng_10.mp4";
+//    private String filePath = Environment.getExternalStorageDirectory().getPath()+"/哆啦A梦：伴我同行2.mp4";
 
     private ActivityMainBinding binding;
     private FFmpegPlayer mFFmpegPlayer;
+
+    public static final int GET_POSITION = 0;
+
+    private Handler timeHandler = new Handler(){
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            if(mFFmpegPlayer==null){
+                return;
+            }
+            switch (msg.what){
+                case GET_POSITION:
+                    upDateTime();
+                    timeHandler.sendEmptyMessageDelayed(GET_POSITION,200);
+                  break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         mFFmpegPlayer.prepare();
         Logger.i("videoWidth = "+ mFFmpegPlayer.getVideoWidth() + " videoHeight = "+ mFFmpegPlayer.getVideoHeight() +" videoDuration = "+ mFFmpegPlayer.getVideoDuration() +" videoRotation = "+ mFFmpegPlayer.getVideoRotation());
 
+
         int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
         ViewGroup.LayoutParams layoutParams = binding.surfaceview.getLayoutParams();
         layoutParams.width = screenWidth;
@@ -93,6 +114,13 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        binding.seekbar.setMax((int) (mFFmpegPlayer.getVideoDuration()));
+        timeHandler.sendEmptyMessageDelayed(GET_POSITION,100);
+    }
+
+    private void upDateTime() {
+        int currentTime = (int) (mFFmpegPlayer.getCurrentPosition());
+        binding.seekbar.setProgress(currentTime);
     }
 
     private void requestAppPermissions() {

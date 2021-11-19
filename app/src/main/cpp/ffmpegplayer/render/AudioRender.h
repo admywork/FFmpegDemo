@@ -60,6 +60,8 @@ private:
     double m_CurTimeStamp;
 
     AVStream *m_Stream;
+
+    bool hasStart;
 };
 
 

@@ -168,6 +168,10 @@ int FFmpegPlayer::getVideoRotation() {
     return m_Demuxer->getVideoRotation();
 }
 
+long FFmpegPlayer::getCurrentPosition() {
+    return m_AudioRender->getTimeStamp();
+}
+
 void FFmpegPlayer::setPreview(JNIEnv *env, jobject jobject) {
     m_VideoRender->setPreview(env,jobject,getVideoWidth(),getVideoHeight());
 }

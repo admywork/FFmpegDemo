@@ -119,7 +119,10 @@ void AudioRender::createEngine() {
 
 void AudioRender::start() {
     (*m_AudioPlayerItf)->SetPlayState(m_AudioPlayerItf, SL_PLAYSTATE_PLAYING);
-    callback(m_BufferQueueItf, this);
+    if(!hasStart){
+        hasStart = true;
+        callback(m_BufferQueueItf, this);
+    }
 }
 
 void AudioRender::pause() {

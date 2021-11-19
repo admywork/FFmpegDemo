@@ -19,6 +19,10 @@ public class FFmpegPlayer {
         native_setDataSource(mNativeRef,path);
     }
 
+    public void setPreview(Surface surface) {
+        native_setPreview(mNativeRef,surface);
+    }
+
     public void prepare(){
         native_prepare(mNativeRef);
     }
@@ -47,8 +51,8 @@ public class FFmpegPlayer {
         return native_getVideoRotation(mNativeRef);
     }
 
-    public void setPreview(Surface surface) {
-        native_setPreview(mNativeRef,surface);
+    public long getCurrentPosition() {
+        return native_getCurrentPosition(mNativeRef);
     }
 
 
@@ -57,6 +61,7 @@ public class FFmpegPlayer {
     private native String native_getInfo(long nativeRef);
     private native long native_create();
     private native void native_setDataSource(long nativeRef,String path);
+    private native void native_setPreview(long nativeRef,Surface surface);
     private native void native_prepare(long nativeRef);
     private native void native_start(long nativeRef);
     private native void native_pause(long nativeRef);
@@ -65,5 +70,5 @@ public class FFmpegPlayer {
     private native int native_getVideoHeight(long nativeRef);
     private native int native_getVideoRotation(long nativeRef);
     private native long native_getVideoDuration(long nativeRef);
-    private native void native_setPreview(long nativeRef,Surface surface);
+    private native long native_getCurrentPosition(long nativeRef);
 }

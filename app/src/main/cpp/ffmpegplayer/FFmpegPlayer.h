@@ -45,6 +45,8 @@ public:
 
     int getVideoRotation();
 
+    long getCurrentPosition();
+
     void setPreview(JNIEnv *pEnv, jobject jSurface);
 
 private:

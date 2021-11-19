@@ -8,22 +8,25 @@
 
 #define CLASS_FFMPEGPLAYER      "com/niklaus/player/FFmpegPlayer"
 
-jlong create(JNIEnv *env, jobject thiz);
 jstring getInfo(JNIEnv *env, jobject thiz,jlong instance);
+jlong create(JNIEnv *env, jobject thiz);
 void setDataSource(JNIEnv *env, jobject thiz,jlong instance,jstring path);
+void setPreview(JNIEnv *env, jobject thiz,jlong instance,jobject jSurface);
 void prepare(JNIEnv *env, jobject thiz,jlong instance);
 void start(JNIEnv *env, jobject thiz,jlong instance);
-void pause(JNIEnv *env, jobject thiz,jlong instance);
 
+void pause(JNIEnv *env, jobject thiz,jlong instance);
 int getVideoWidth(JNIEnv *env, jobject thiz,jlong instance);
 int getVideoHeight(JNIEnv *env, jobject thiz,jlong instance);
 int getVideoRotation(JNIEnv *env, jobject thiz,jlong instance);
 long getVideoDuration(JNIEnv *env, jobject thiz,jlong instance);
-void setPreview(JNIEnv *env, jobject thiz,jlong instance,jobject jSurface);
+long getCurrentPosition(JNIEnv *env, jobject thiz,jlong instance);
 
 static JNINativeMethod playerMethods[] = {
+        {"native_getInfo", "(J)Ljava/lang/String;", (void *) getInfo},
         {"native_create", "()J", (void *) create},
         {"native_setDataSource", "(JLjava/lang/String;)V", (void *) setDataSource},
+        {"native_setPreview", "(JLandroid/view/Surface;)V", (void *) setPreview},
         {"native_prepare", "(J)V", (void *) prepare},
         {"native_start", "(J)V", (void *) start},
         {"native_pause", "(J)V", (void *) pause},
@@ -31,8 +34,7 @@ static JNINativeMethod playerMethods[] = {
         {"native_getVideoHeight", "(J)I", (void *) getVideoHeight},
         {"native_getVideoRotation", "(J)I", (void *) getVideoRotation},
         {"native_getVideoDuration", "(J)J", (void *) getVideoDuration},
-        {"native_getInfo", "(J)Ljava/lang/String;", (void *) getInfo},
-        {"native_setPreview", "(JLandroid/view/Surface;)V", (void *) setPreview},
+        {"native_getCurrentPosition", "(J)J", (void *) getCurrentPosition},
 };
 
 JNIEXPORT
@@ -86,27 +88,33 @@ void pause(JNIEnv *env, jobject thiz, jlong instance){
 }
 
 JNIEXPORT
-int getVideoWidth(JNIEnv *env, jobject thiz, jlong instance){
+jint getVideoWidth(JNIEnv *env, jobject thiz, jlong instance){
     auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
     return ffmpegPlayer->getVideoWidth();
 }
 
 JNIEXPORT
-int getVideoHeight(JNIEnv *env, jobject thiz, jlong instance){
+jint getVideoHeight(JNIEnv *env, jobject thiz, jlong instance){
     auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
     return ffmpegPlayer->getVideoHeight();
 }
 
 JNIEXPORT
-long getVideoDuration(JNIEnv *env, jobject thiz, jlong instance){
+jlong getVideoDuration(JNIEnv *env, jobject thiz, jlong instance){
     auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
     return ffmpegPlayer->getVideoDuration();
 }
 
 JNIEXPORT
-int getVideoRotation(JNIEnv *env, jobject thiz, jlong instance){
+jint getVideoRotation(JNIEnv *env, jobject thiz, jlong instance){
     auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
     return ffmpegPlayer->getVideoRotation();
+}
+
+JNIEXPORT
+jlong getCurrentPosition(JNIEnv *env, jobject thiz, jlong instance){
+    auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
+    return ffmpegPlayer->getCurrentPosition();
 }
 
 JNIEXPORT
