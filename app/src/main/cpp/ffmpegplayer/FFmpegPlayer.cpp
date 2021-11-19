@@ -96,7 +96,7 @@ void FFmpegPlayer::prepare() {
     m_VideoRender->setTimeStampCallBack([=]()-> double{
         return m_AudioRender->getTimeStamp();
     });
-
+    m_State = PREPARED;
     av_log_set_callback(log_callback);
 }
 
@@ -106,10 +106,12 @@ void FFmpegPlayer::start() {
     m_VideoRender->start();
     m_AudioDecoder->start();
     m_AudioRender->start();
+    m_State = PLAYING;
 }
 
 void FFmpegPlayer::pause() {
     m_AudioRender->pause();
+    m_State = PAUSED;
 }
 
 void FFmpegPlayer::demuxOnePacketCallBack(AVPacket *avPacket) {
@@ -176,4 +178,6 @@ void FFmpegPlayer::setPreview(JNIEnv *env, jobject jobject) {
     m_VideoRender->setPreview(env,jobject,getVideoWidth(),getVideoHeight());
 }
 
-
+void FFmpegPlayer::seekTo(long time_ms) {
+    m_Demuxer->seekTo(time_ms);
+}

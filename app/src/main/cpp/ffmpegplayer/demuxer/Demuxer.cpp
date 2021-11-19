@@ -86,3 +86,7 @@ int Demuxer::getVideoRotation() {
     }
     return rotate;
 }
+
+void Demuxer::seekTo(long time_ms) {
+    av_seek_frame(m_AVFormatContext, -1, time_ms * 1000, AVSEEK_FLAG_BACKWARD);
+}

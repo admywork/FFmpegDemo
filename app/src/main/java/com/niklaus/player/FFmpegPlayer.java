@@ -35,6 +35,10 @@ public class FFmpegPlayer {
         native_pause(mNativeRef);
     }
 
+    public void seekTo(long time_ms){
+        native_seekTo(mNativeRef,time_ms);
+    }
+
     public int getVideoWidth(){
         return native_getVideoWidth(mNativeRef);
     }
@@ -65,6 +69,7 @@ public class FFmpegPlayer {
     private native void native_prepare(long nativeRef);
     private native void native_start(long nativeRef);
     private native void native_pause(long nativeRef);
+    private native void native_seekTo(long nativeRef,long time_ms);
 
     private native int native_getVideoWidth(long nativeRef);
     private native int native_getVideoHeight(long nativeRef);

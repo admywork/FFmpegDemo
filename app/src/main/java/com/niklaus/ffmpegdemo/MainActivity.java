@@ -14,6 +14,7 @@ import android.os.Message;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.getkeepsafe.relinker.ReLinker;
@@ -116,11 +117,30 @@ public class MainActivity extends AppCompatActivity {
         });
         binding.seekbar.setMax((int) (mFFmpegPlayer.getVideoDuration()));
         timeHandler.sendEmptyMessageDelayed(GET_POSITION,100);
+        binding.tvTotalDuration.setText(String.format("%.1f",mFFmpegPlayer.getVideoDuration() * 1.0 / 1000));
+
+        binding.seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mFFmpegPlayer.seekTo(seekBar.getProgress());
+            }
+        });
     }
 
     private void upDateTime() {
         int currentTime = (int) (mFFmpegPlayer.getCurrentPosition());
         binding.seekbar.setProgress(currentTime);
+        binding.tvCurPosition.setText(String.format("%.1f",currentTime * 1.0 / 1000));
     }
 
     private void requestAppPermissions() {

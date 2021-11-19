@@ -19,6 +19,14 @@ class AudioRender;
 struct AVPacket;
 struct AVFrame;
 
+enum PLAYER_STATE{
+    PREPARED,
+    PLAYING,
+    SEEKING,
+    PAUSED,
+    END
+};
+
 class FFmpegPlayer {
 
 public:
@@ -49,9 +57,13 @@ public:
 
     void setPreview(JNIEnv *pEnv, jobject jSurface);
 
+    void seekTo(long time_ms);
+
 private:
 
     std::string m_Path;
+
+    PLAYER_STATE m_State;
 
     std::unique_ptr<Demuxer> m_Demuxer;
     std::unique_ptr<VideoDecoder> m_VideoDecoder;

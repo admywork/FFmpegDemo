@@ -14,8 +14,9 @@ void setDataSource(JNIEnv *env, jobject thiz,jlong instance,jstring path);
 void setPreview(JNIEnv *env, jobject thiz,jlong instance,jobject jSurface);
 void prepare(JNIEnv *env, jobject thiz,jlong instance);
 void start(JNIEnv *env, jobject thiz,jlong instance);
-
 void pause(JNIEnv *env, jobject thiz,jlong instance);
+void seekTo(JNIEnv *env, jobject thiz,jlong instance,jlong time_ms);
+
 int getVideoWidth(JNIEnv *env, jobject thiz,jlong instance);
 int getVideoHeight(JNIEnv *env, jobject thiz,jlong instance);
 int getVideoRotation(JNIEnv *env, jobject thiz,jlong instance);
@@ -30,6 +31,7 @@ static JNINativeMethod playerMethods[] = {
         {"native_prepare", "(J)V", (void *) prepare},
         {"native_start", "(J)V", (void *) start},
         {"native_pause", "(J)V", (void *) pause},
+        {"native_seekTo", "(JJ)V", (void *) seekTo},
         {"native_getVideoWidth", "(J)I", (void *) getVideoWidth},
         {"native_getVideoHeight", "(J)I", (void *) getVideoHeight},
         {"native_getVideoRotation", "(J)I", (void *) getVideoRotation},
@@ -85,6 +87,12 @@ JNIEXPORT
 void pause(JNIEnv *env, jobject thiz, jlong instance){
     auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
     ffmpegPlayer->pause();
+}
+
+JNIEXPORT
+void seekTo(JNIEnv *env, jobject thiz, jlong instance,jlong time_ms){
+    auto* ffmpegPlayer = reinterpret_cast<FFmpegPlayer *>(instance);
+    ffmpegPlayer->seekTo(time_ms);
 }
 
 JNIEXPORT

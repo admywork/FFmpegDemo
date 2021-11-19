@@ -52,6 +52,8 @@ public:
     int64_t getVideoDuration();
     int getVideoRotation();
 
+    void seekTo(long time_ms);
+
 private:
     //封装格式上下文
     AVFormatContext *m_AVFormatContext = nullptr;
