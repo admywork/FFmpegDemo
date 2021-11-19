@@ -179,5 +179,9 @@ void FFmpegPlayer::setPreview(JNIEnv *env, jobject jobject) {
 }
 
 void FFmpegPlayer::seekTo(long time_ms) {
+    m_VideoDecoder->clearQueue();
+    m_AudioDecoder->clearQueue();
+    m_VideoRender->clearQueue();
+    m_AudioRender->clearQueue();
     m_Demuxer->seekTo(time_ms);
 }

@@ -96,3 +96,7 @@ void BaseDecoder::updateTimeStamp(AVFrame *avFrame) {
     m_CurTimeStamp = (int64_t) ((m_CurTimeStamp * av_q2d(m_AVStream->time_base)) * 1000);
 //    LOGI(getLogTag(),"m_CurTimeStamp = %f",m_CurTimeStamp);
 }
+
+void BaseDecoder::clearQueue() {
+    m_SyncQueue->clear();
+}

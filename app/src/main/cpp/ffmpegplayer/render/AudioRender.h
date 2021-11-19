@@ -28,6 +28,8 @@ public:
 
     void putAVFrame(AVFrame *avFrame);
 
+    void clearQueue();
+
     double getTimeStamp(){
         return m_CurTimeStamp;
     }

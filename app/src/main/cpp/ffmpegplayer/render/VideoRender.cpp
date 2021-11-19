@@ -100,3 +100,7 @@ double VideoRender::updateTimeStamp(AVFrame *avFrame,AVStream *stream) {
     curTimeStamp =  (curTimeStamp * av_q2d(stream->time_base)) * 1000;
     return curTimeStamp;
 }
+
+void VideoRender::clearQueue() {
+    m_SyncQueue->clear();
+}

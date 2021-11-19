@@ -47,6 +47,11 @@ public:
         m_notFull.notify_one();
     }
 
+    void clear() {
+        std::lock_guard<std::mutex> locker(m_mutex);
+        m_queue.clear();
+    }
+
 private:
     std::list<T> m_queue;                  //缓冲区
     std::mutex m_mutex;                    //互斥量和条件变量结合起来使用

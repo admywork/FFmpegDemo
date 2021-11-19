@@ -36,6 +36,8 @@ public:
         return m_TimeStampCallBack;
     }
 
+    void clearQueue();
+
 private:
 
     ANativeWindow *m_ANativeWindow;

@@ -41,6 +41,8 @@ public:
 
     void putAVPacket(AVPacket* avPacket);
 
+    void clearQueue();
+
     virtual void onFrameAvailable(AVFrame *avFrame) = 0;
 
     AVCodecContext* getAVCodecContext(){

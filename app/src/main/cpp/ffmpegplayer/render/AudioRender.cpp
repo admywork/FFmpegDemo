@@ -165,3 +165,7 @@ void AudioRender::updateTimeStamp(AVFrame *avFrame) {
 void AudioRender::putAVFrame(AVFrame *avFrame) {
     m_SyncQueue->put(avFrame);
 }
+
+void AudioRender::clearQueue() {
+    m_SyncQueue->clear();
+}
