@@ -20,12 +20,14 @@ extern "C" {
 #include "libavdevice/version.h"
 #include "libavformat/version.h"
 #include "libavutil/version.h"
+#include "libavutil/channel_layout.h"
 #include "libavfilter/version.h"
 #include "libpostproc/version.h"
 #include "libswresample/version.h"
 #include "libswscale/version.h"
 
 #include "libavformat/avformat.h"
+#include "libavcodec/avcodec.h"
 #ifdef __cplusplus
 }
 #endif

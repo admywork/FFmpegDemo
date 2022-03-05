@@ -7,6 +7,7 @@
 
 #include<android/log.h>
 #include <sys/time.h>
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {

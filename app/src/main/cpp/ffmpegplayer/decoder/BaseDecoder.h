@@ -57,7 +57,7 @@ protected:
 
     AVStream *m_AVStream = nullptr;
     //解码器
-    AVCodec *m_AVCodec = nullptr;
+    const AVCodec *m_AVCodec = nullptr;
     //解码器上下文
     AVCodecContext *m_AVCodecContext = nullptr;
 

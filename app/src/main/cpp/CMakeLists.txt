@@ -36,12 +36,6 @@ add_library(
 
         ${ffmpegplayer_src})
 
-
-#find_library(
-#        log-lib
-#
-#        log)
-
 set(ffmpeg-libs
         avcodec
         avformat
